@@ -1,0 +1,17 @@
+﻿@model ADYS.ViewModels.StudentDashboardViewModel
+
+@{
+    ViewBag.Title = "Öğrenci Paneli";
+}
+
+<h2>Merhaba, @Model.StudentName</h2>
+
+<div>
+    <h4>Danışman Bilgileri</h4>
+    <p><strong>Adı:</strong> @Model.AdvisorName</p>
+    <p><strong>E-posta:</strong> @Model.AdvisorEmail</p>
+    <p>
+        @Html.ActionLink("Ders Seç", "SelectCourses", "Student", null, new { @class = "btn btn-success" })
+    </p>
+
+</div>

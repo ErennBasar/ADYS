@@ -1,0 +1,63 @@
+﻿@model List<ADYS.ViewModels.CourseSelectionViewModel>
+
+@{
+    ViewBag.Title = "Ders Seçimi";
+}
+
+<h2>Ders Seçimi</h2>
+
+@if (!ViewData.ModelState.IsValid)
+{
+    <div class="alert alert-danger">
+        @Html.ValidationSummary()
+    </div>
+}
+
+
+@using (Html.BeginForm())
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Seç</th>
+                <th>Ders Adı</th>
+                <th>AKTS</th>
+            </tr>
+        </thead>
+        <tbody>
+            @for (int i = 0; i < Model.Count; i++)
+            {
+                <tr>
+                    <td>
+                        @Html.CheckBoxFor(m => m[i].IsSelected, new { @class = "aktsCheckbox", data_akts = Model[i].AKTS })
+                        @Html.HiddenFor(m => m[i].CourseId)
+                        @Html.HiddenFor(m => m[i].CourseName)
+                        @Html.HiddenFor(m => m[i].AKTS)
+                    </td>
+                    <td>@Model[i].CourseName</td>
+                    <td>@Model[i].AKTS</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+    <p><strong>Toplam AKTS:</strong> <span id="totalAkts">0</span></p>
+
+    <input type="submit" value="Onayla" class="btn btn-primary" />
+}
+
+@section Scripts {
+    <script>
+        function calculateAkts() {
+            var total = 0;
+            $(".aktsCheckbox:checked").each(function () {
+                total += parseInt($(this).data("akts"));
+            });
+            $("#totalAkts").text(total);
+        }
+
+        $(".aktsCheckbox").change(calculateAkts);
+        $(document).ready(calculateAkts);
+    </script>
+}
+
