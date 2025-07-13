@@ -1,9 +1,5 @@
 ﻿using ADYS.Models;
-using System;
-using System.Collections.Generic;
-using System.Data.Entity;
-using System.Linq;
-using System.Web;
+using System.Data.Entity; 
 
 namespace ADYS.Data
 {
@@ -15,6 +11,23 @@ namespace ADYS.Data
         public DbSet<Advisor> Advisors { get; set; }
         public DbSet<Course> Courses { get; set; }
         public DbSet<CourseSelection> CourseSelections { get; set; }
+        public DbSet<Department> Departments { get; set; } // department tanımını unutma
 
+        protected override void OnModelCreating(DbModelBuilder modelBuilder)
+        {
+            base.OnModelCreating(modelBuilder);
+
+            modelBuilder.Entity<Course>()
+                .HasRequired(c => c.Advisor)
+                .WithMany()
+                .HasForeignKey(c => c.AdvisorId)
+                .WillCascadeOnDelete(false);
+
+            modelBuilder.Entity<Course>()
+                .HasRequired(c => c.Department)
+                .WithMany()
+                .HasForeignKey(c => c.DepartmentId)
+                .WillCascadeOnDelete(false);
+        }
     }
 }

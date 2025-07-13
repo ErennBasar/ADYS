@@ -1,0 +1,89 @@
+﻿@model List<ADYS.ViewModels.ReviewCourseViewModel>
+@{
+    ViewBag.Title = "Ders Onay Paneli";
+    int toplamAkts = Model.Sum(m => m.AKTS);
+    bool hepsiOnayli = Model.All(m => m.IsApproved == true);
+}
+
+<h2>@ViewBag.StudentName - Ders Seçimleri</h2>
+
+<p><strong>Toplam Seçilen AKTS:</strong> @toplamAkts</p>
+
+@if (hepsiOnayli)
+{
+    <div class="alert alert-success">✅ Tüm dersler onaylandı.</div>
+}
+else
+{
+    <div class="alert alert-warning">⏳ Bazı dersler henüz onaylanmadı.</div>
+}
+
+<table class="table table-bordered table-hover">
+    <thead>
+        <tr>
+            <th>Ders Adı</th>
+            <th>AKTS</th>
+            <th>Durum</th>
+            <th>İşlem</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            string rowClass = item.IsApproved == true ? "table-success"
+                             : item.IsApproved == false ? "table-danger"
+                             : "table-warning";
+
+            <tr class="@rowClass" id="row-@item.CourseSelectionId">
+                <td>@item.CourseName</td>
+                <td>@item.AKTS</td>
+                <td>
+                    @if (item.IsApproved == true)
+                    {
+                        <span class="text-success">✔ Onaylandı</span>
+                    }
+                    else if (item.IsApproved == false)
+                    {
+                        <span class="text-danger">✖ Reddedildi</span>
+                    }
+                    else
+                    {
+                        <span class="text-muted">Bekliyor</span>
+                    }
+                </td>
+                <td>
+                    <button class="btn btn-success btn-sm approve-btn" data-id="@item.CourseSelectionId" data-approve="true">Onayla</button>
+                    <button class="btn btn-danger btn-sm approve-btn" data-id="@item.CourseSelectionId" data-approve="false">Reddet</button>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+@section scripts {
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        $(function () {
+            $(".approve-btn").click(function () {
+                var id = $(this).data("id");
+                var approve = $(this).data("approve");
+
+                $.ajax({
+                    url: '@Url.Action("UpdateApproval", "Advisor")',
+                    method: 'POST',
+                    data: { courseSelectionId: id, approve: approve },
+                    success: function (res) {
+                        if (res.success) {
+                            location.reload();
+                        } else {
+                            alert("İşlem başarısız.");
+                        }
+                    },
+                    error: function () {
+                        alert("Bir hata oluştu.");
+                    }
+                });
+            });
+        });
+    </script>
+}

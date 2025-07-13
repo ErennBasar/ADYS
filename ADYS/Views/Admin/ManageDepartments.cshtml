@@ -1,0 +1,31 @@
+﻿@model List<ADYS.Models.Department>
+@{
+    ViewBag.Title = "Bölüm Tanımlamaları";
+}
+
+<h2>Bölüm Tanımlamaları</h2>
+
+<p>
+    @Html.ActionLink("Yeni Bölüm Ekle", "CreateDepartment", "Admin", null, new { @class = "btn btn-success mb-3" })
+</p>
+
+<table class="table table-bordered table-striped">
+    <thead>
+        <tr>
+            <th>Bölüm Adı</th>
+            <th>İşlemler</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var department in Model)
+        {
+            <tr>
+                <td>@department.DepartmentName</td>
+                <td>
+                    @Html.ActionLink("Düzenle", "CreateDepartment", "Admin", new { id = department.DepartmentId }, new { @class = "btn btn-sm btn-warning" })
+                    @Html.ActionLink("Sil", "DeleteDepartment", "Admin", new { id = department.DepartmentId }, new { @class = "btn btn-sm btn-danger", onclick = "return confirm('Silmek istediğinize emin misiniz?');" })
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

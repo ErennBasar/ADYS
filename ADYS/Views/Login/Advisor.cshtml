@@ -1,0 +1,30 @@
+﻿@model ADYS.ViewModels.LoginViewModel
+
+@{
+    ViewBag.Title = "Danışman Girişi";
+}
+
+<h2>@ViewBag.Title</h2>
+
+@using (Html.BeginForm())
+{
+    <div class="form-group">
+        @Html.LabelFor(m => m.Email)
+        @Html.TextBoxFor(m => m.Email, new { @class = "form-control" })
+    </div>
+    <div class="form-group">
+        @Html.LabelFor(m => m.Password)
+        @Html.PasswordFor(m => m.Password, new { @class = "form-control" })
+    </div>
+    <br />
+    <input type="submit" value="Giriş Yap" class="btn btn-primary" />
+}
+
+@if (!ViewData.ModelState.IsValid)
+{
+    <div class="alert alert-danger" style="margin-top: 15px;">
+        @Html.ValidationSummary()
+    </div>
+}
+
+

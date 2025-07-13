@@ -10,5 +10,9 @@ namespace ADYS.ViewModels
         public string StudentName { get; set; }
         public string AdvisorName { get; set; }
         public string AdvisorEmail { get; set; }
+        public int TotalAKTS { get; set; }
+        public bool AllApproved { get; set; }
+        public List<SelectedCourseViewModel> SelectedCourses { get; set; }
+
     }
 }

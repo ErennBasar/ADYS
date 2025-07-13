@@ -1,0 +1,27 @@
+﻿@{
+    ViewBag.Title = "Giriş Ekranı";
+}
+
+<h2 style="text-align:center;">Giriş Ekranı</h2>
+
+@if (TempData["LogoutMessage"] != null)
+{
+    <div class="alert alert-success text-center" style="margin-top: 20px;">
+        @TempData["LogoutMessage"]
+    </div>
+}
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger">
+        @TempData["ErrorMessage"]
+    </div>
+}
+
+
+<div style="text-align:center; margin-top:30px;">
+    @Html.ActionLink("🎓 Öğrenci Girişi", "Student", "Login", null, new { @class = "btn btn-primary", style = "margin-right: 20px; padding: 10px 30px;" })
+    @Html.ActionLink("🧑‍🏫 Danışman Girişi", "Advisor", "Login", null, new { @class = "btn btn-success", style = "margin-right: 20px; padding: 10px 30px;" })
+    @Html.ActionLink("🛡️ Admin Girişi", "Admin", "Login", null, new { @class = "btn btn-warning", style = "padding: 10px 30px;" })
+
+</div>
+

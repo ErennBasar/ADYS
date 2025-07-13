@@ -1,0 +1,19 @@
+﻿@model List<ADYS.ViewModels.ReviewCourseViewModel>
+
+<h3>@ViewBag.StudentName - Ders Seçimleri</h3>
+
+<table class="table">
+    <tr>
+        <th>Ders</th>
+        <th>AKTS</th>
+        <th>Onay Durumu</th>
+    </tr>
+    @foreach (var item in Model)
+    {
+        <tr>
+            <td>@item.CourseName</td>
+            <td>@item.AKTS</td>
+            <td>@(item.IsApproved ? "Onaylı" : "Bekliyor")</td>
+        </tr>
+    }
+</table>

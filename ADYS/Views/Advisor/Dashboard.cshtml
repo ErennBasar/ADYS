@@ -1,17 +1,29 @@
-﻿
+﻿@model List<ADYS.Models.Student>
+
 @{
-    Layout = null;
+    ViewBag.Title = "Danışman Paneli";
 }
 
-<!DOCTYPE html>
+<h2>@ViewBag.AdvisorName</h2>
 
-<html>
-<head>
-    <meta name="viewport" content="width=device-width" />
-    <title>Dashboard</title>
-</head>
-<body>
-    <div> 
-    </div>
-</body>
-</html>
+<p>Danışman öğrencilerinizin listesi:</p>
+
+<table class="table table-striped table-bordered">
+    <thead>
+        <tr>
+            <th>Öğrenci Adı</th>
+            <th>İşlem</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var student in Model)
+        {
+            <tr>
+                <td>@student.FullName</td>
+                <td>
+                    @Html.ActionLink("Dersleri İncele", "Review", "Advisor", new { studentId = student.StudentId }, new { @class = "btn btn-info btn-sm" })
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

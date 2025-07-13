@@ -1,0 +1,32 @@
+﻿@model List<ADYS.Models.Student>
+
+@{
+    ViewBag.Title = "Admin Paneli - Genel Kontrol";
+}
+
+<h2>Genel Kontrol Ekranı</h2>
+
+<table class="table table-bordered table-striped">
+    <thead>
+        <tr>
+            <th>Öğrenci Adı</th>
+            <th>Email</th>
+            <th>Danışman</th>
+            <th>İşlem</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var student in Model)
+        {
+            <tr>
+                <td>@student.FullName</td>
+                <td>@student.Email</td>
+                <td>@(student.Advisor != null ? student.Advisor.FullName : "-")</td>
+                <td>
+                    @Html.ActionLink("Dersleri İncele", "Review", "Admin", new { studentId = student.StudentId }, new { @class = "btn btn-info btn-sm" })
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+

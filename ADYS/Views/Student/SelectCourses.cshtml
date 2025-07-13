@@ -36,6 +36,7 @@
                     </td>
                     <td>@Model[i].CourseName</td>
                     <td>@Model[i].AKTS</td>
+
                 </tr>
             }
         </tbody>
@@ -43,7 +44,7 @@
 
     <p><strong>Toplam AKTS:</strong> <span id="totalAkts">0</span></p>
 
-    <input type="submit" value="Onayla" class="btn btn-primary" />
+    <input type="submit" id="submitButton" value="Onayla" class="btn btn-primary" />
 }
 
 @section Scripts {
@@ -54,10 +55,20 @@
                 total += parseInt($(this).data("akts"));
             });
             $("#totalAkts").text(total);
+
+            // Eğer toplam AKTS 30'u aşarsa butonu disable yap
+            if (total > 30) {
+                $("#submitButton").prop("disabled", true);
+            } else {
+                $("#submitButton").prop("disabled", false);
+            }
         }
 
-        $(".aktsCheckbox").change(calculateAkts);
-        $(document).ready(calculateAkts);
+        $(document).ready(function () {
+            $(".aktsCheckbox").change(calculateAkts);
+            calculateAkts(); // Sayfa yüklenince kontrol et
+        });
     </script>
 }
+
 

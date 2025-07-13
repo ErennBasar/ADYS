@@ -1,17 +1,64 @@
 ﻿@model ADYS.ViewModels.StudentDashboardViewModel
 
-@{
-    ViewBag.Title = "Öğrenci Paneli";
-}
-
 <h2>Merhaba, @Model.StudentName</h2>
 
 <div>
     <h4>Danışman Bilgileri</h4>
     <p><strong>Adı:</strong> @Model.AdvisorName</p>
     <p><strong>E-posta:</strong> @Model.AdvisorEmail</p>
-    <p>
-        @Html.ActionLink("Ders Seç", "SelectCourses", "Student", null, new { @class = "btn btn-success" })
-    </p>
-
 </div>
+
+@if (Model.SelectedCourses != null && Model.SelectedCourses.Any())
+{
+    <h4>Seçtiğiniz Dersler</h4>
+    <p><strong>Toplam AKTS:</strong> @Model.TotalAKTS</p>
+
+    if (Model.AllApproved)
+    {
+        <div class="alert alert-success">Tüm dersler danışmanınız tarafından onaylandı.</div>
+    }
+    else
+    {
+<div class="alert alert-warning">⏳ Onay süreci devam ediyor.</div>
+    }
+
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th>Ders Adı</th>
+                <th>AKTS</th>
+                <th>Danışman Onayı</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model.SelectedCourses)
+            {
+                string rowClass = item.IsApproved == true ? "table-success"
+                                : item.IsApproved == false ? "table-danger"
+                                : "table-warning";
+                <tr class="@rowClass">
+                    <td>@item.CourseName</td>
+                    <td>@item.AKTS</td>
+                    <td>
+                        @if (item.IsApproved == true)
+                        {
+                            <span class="text-success">Onaylandı</span>
+                        }
+                        else if (item.IsApproved == false)
+                        {
+                            <span class="text-danger">Reddedildi</span>
+                        }
+                        else
+                        {
+                            <span class="text-muted">Bekliyor</span>
+                        }
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+else
+{
+    <div class="alert alert-info">Henüz ders seçimi yapılmamış.</div>
+}

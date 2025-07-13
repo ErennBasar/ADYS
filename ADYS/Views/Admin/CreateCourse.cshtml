@@ -1,0 +1,34 @@
+﻿@model ADYS.Models.Course
+
+@{
+    ViewBag.Title = "Yeni Ders Ekle";
+}
+
+<h2>@ViewBag.Title</h2>
+
+@using (Html.BeginForm())
+{
+    <div class="form-group">
+        @Html.LabelFor(m => m.CourseName)
+        @Html.TextBoxFor(m => m.CourseName, new { @class = "form-control" })
+    </div>
+
+    <div class="form-group">
+        @Html.LabelFor(m => m.AKTS)
+        @Html.TextBoxFor(m => m.AKTS, new { @class = "form-control", type = "number", min = "1" })
+    </div>
+
+    <div class="form-group">
+        @Html.LabelFor(m => m.AdvisorId)
+        @Html.DropDownListFor(m => m.AdvisorId, (SelectList)ViewBag.Advisors, "Dersi vereni seçin", new { @class = "form-control" })
+        @Html.ValidationMessageFor(m => m.AdvisorId)
+    </div>
+
+    <div class="form-group">
+        @Html.LabelFor(m => m.DepartmentId)
+        @Html.DropDownListFor(m => m.DepartmentId, (SelectList)ViewBag.Departments, "Bölüm Seçin", new { @class = "form-control" })
+        @Html.ValidationMessageFor(m => m.DepartmentId)
+    </div>
+
+    <button type="submit" class="btn btn-primary">Kaydet</button>
+}

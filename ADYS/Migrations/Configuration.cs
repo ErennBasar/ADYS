@@ -10,7 +10,6 @@
         public Configuration()
         {
             AutomaticMigrationsEnabled = false;
-            ContextKey = "ADYS.Data.UniversityContext";
         }
 
         protected override void Seed(ADYS.Data.UniversityContext context)

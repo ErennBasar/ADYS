@@ -17,20 +17,32 @@ namespace ADYS.Controllers
         // Öğrenci paneli
         public ActionResult Dashboard()
         {
-            // Giriş yapan öğrenci ID'sini al (örnek olarak 1 yazıldı, giriş sistemine göre güncellenmeli)
-            int studentId = 1;
+            int studentId = (int)(Session["StudentId"] ?? 0);
+            if (studentId == 0)
+                return RedirectToAction("Student", "Login");
 
-            var student = db.Students.Include("Advisor")
+            var student = db.Students
+                             .Include("Advisor")
+                             .Include("CourseSelections.Course")
                              .FirstOrDefault(s => s.StudentId == studentId);
 
-            if (student == null)
-                return HttpNotFound();
+            if (student == null) return HttpNotFound();
+
+            var selectedCourses = student.CourseSelections.Select(cs => new SelectedCourseViewModel
+            {
+                CourseName = cs.Course.CourseName,
+                AKTS = cs.Course.AKTS,
+                IsApproved = cs.IsApprovedByAdvisor
+            }).ToList();
 
             var model = new StudentDashboardViewModel
             {
                 StudentName = student.FullName,
                 AdvisorName = student.Advisor.FullName,
-                AdvisorEmail = "danisman@universite.edu.tr" // Advisor modeline eklenmişse direkt kullanılabilir
+                AdvisorEmail = student.Advisor.Email,
+                SelectedCourses = selectedCourses,
+                TotalAKTS = selectedCourses.Sum(c => c.AKTS),
+                AllApproved = selectedCourses.All(c => c.IsApproved == true)
             };
 
             return View(model);
@@ -38,6 +50,15 @@ namespace ADYS.Controllers
         // GET: Student/SelectCourses
         public ActionResult SelectCourses()
         {
+            int studentId = (int)(Session["StudentId"] ?? 0);
+            if (studentId == 0)
+                return RedirectToAction("Student", "Login");
+
+            var selectedCourseIds = db.CourseSelections
+                .Where(cs => cs.StudentId == studentId)
+                .Select(cs => cs.CourseId)
+                .ToList();
+
             var courses = db.Courses.ToList();
 
             var model = courses.Select(c => new CourseSelectionViewModel
@@ -45,17 +66,21 @@ namespace ADYS.Controllers
                 CourseId = c.CourseId,
                 CourseName = c.CourseName,
                 AKTS = c.AKTS,
-                IsSelected = false
+                IsSelected = selectedCourseIds.Contains(c.CourseId)
             }).ToList();
 
+            
             return View(model);
         }
+
 
         // POST: Student/SelectCourses
         [HttpPost]
         public ActionResult SelectCourses(List<CourseSelectionViewModel> selectedCourses)
         {
-            int studentId = 1; // Test için sabit
+            int studentId = (int)(Session["StudentId"] ?? 0);
+            if (studentId == 0)
+                return RedirectToAction("Student", "Login");
 
             var selected = selectedCourses
                 .Where(c => c.IsSelected)
@@ -66,9 +91,26 @@ namespace ADYS.Controllers
             if (totalAkts > 30)
             {
                 ModelState.AddModelError("", "Toplam AKTS 30'dan fazla olamaz.");
-                return View(selectedCourses);
+
+                // Ders listesini tekrar yükle (çünkü View yeniden çiziliyor)
+                var allCourses = db.Courses.ToList();
+                var courseViewModels = allCourses.Select(c => new CourseSelectionViewModel
+                {
+                    CourseId = c.CourseId,
+                    CourseName = c.CourseName,
+                    AKTS = c.AKTS,
+                    IsSelected = selectedCourses.Any(s => s.CourseId == c.CourseId && s.IsSelected)
+                }).ToList();
+
+
+                return View(courseViewModels);
             }
 
+            // Önce varsa eski seçimleri sil
+            var existingSelections = db.CourseSelections.Where(cs => cs.StudentId == studentId);
+            db.CourseSelections.RemoveRange(existingSelections);
+
+            // Seçilenleri ekle
             foreach (var course in selected)
             {
                 db.CourseSelections.Add(new CourseSelection
@@ -82,6 +124,7 @@ namespace ADYS.Controllers
             db.SaveChanges();
             return RedirectToAction("Dashboard");
         }
+
 
     }
 }

@@ -1,0 +1,34 @@
+﻿@model List<ADYS.Models.Advisor>
+
+@{
+    ViewBag.Title = "Danışman Tanımlamaları";
+}
+
+<h2>Danışman Tanımlamaları</h2>
+
+<p>
+    @Html.ActionLink("Yeni Danışman Ekle", "CreateAdvisor", "Admin", null, new { @class = "btn btn-success" })
+</p>
+
+<table class="table table-striped table-bordered">
+    <thead>
+        <tr>
+            <th>Ad Soyad</th>
+            <th>Email</th>
+            <th>İşlemler</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var advisor in Model)
+        {
+            <tr>
+                <td>@advisor.FullName</td>
+                <td>@advisor.Email</td>
+                <td>
+                    @Html.ActionLink("Güncelle", "CreateAdvisor", "Admin", new { id = advisor.AdvisorId }, new { @class = "btn btn-warning btn-sm" })
+                    @Html.ActionLink("Sil", "DeleteAdvisor", "Admin", new { id = advisor.AdvisorId }, new { @class = "btn btn-danger btn-sm", onclick = "return confirm('Silmek istediğinize emin misiniz?');" })
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

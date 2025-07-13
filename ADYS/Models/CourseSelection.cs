@@ -9,11 +9,13 @@ namespace ADYS.Models
     {
         public int CourseSelectionId { get; set; }  
         public int StudentId { get; set; }
-        public int CourseId { get; set; }
-        public bool IsApprovedByAdvisor { get; set; }
-
         public virtual Student Student { get; set; }
+        public int CourseId { get; set; }
         public virtual Course Course { get; set; }
+        public bool IsApprovedByAdvisor { get; set; }
+        public string AdvisorFullName { get; set; }
+
+
     }
 
 

@@ -23,6 +23,8 @@
                     {
                         StudentId = c.Int(nullable: false, identity: true),
                         FullName = c.String(),
+                        Email = c.String(),
+                        Password = c.String(),
                         AdvisorId = c.Int(nullable: false),
                     })
                 .PrimaryKey(t => t.StudentId)

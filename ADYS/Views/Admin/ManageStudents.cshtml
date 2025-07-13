@@ -1,0 +1,55 @@
+﻿@model List<ADYS.Models.Student>
+@{
+    ViewBag.Title = "Öğrenci Tanımlamaları";
+}
+
+<h2>Öğrenci Tanımlamaları</h2>
+
+<h4>Yeni Öğrenci Ekle</h4>
+@using (Html.BeginForm("AddStudent", "Admin", FormMethod.Post))
+{
+    <div class="form-group">
+        @Html.Label("Ad Soyad")
+        @Html.TextBox("FullName", null, new { @class = "form-control" })
+    </div>
+    <div class="form-group">
+        @Html.Label("Email")
+        @Html.TextBox("Email", null, new { @class = "form-control", type = "email" })
+    </div>
+    <div class="form-group">
+        @Html.Label("Şifre")
+        @Html.Password("Password", null, new { @class = "form-control" })
+    </div>
+    <div class="form-group">
+        @Html.Label("Danışman")
+        @Html.DropDownList("AdvisorId", (SelectList)ViewBag.Advisors, "Seçiniz", new { @class = "form-control" })
+    </div>
+    <button type="submit" class="btn btn-primary">Kaydet</button>
+}
+
+<hr />
+
+<h4>Öğrenci Listesi</h4>
+<table class="table table-bordered table-striped">
+    <thead>
+        <tr>
+            <th>Ad Soyad</th>
+            <th>Email</th>
+            <th>Danışman</th>
+            <th>İşlem</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var student in Model)
+        {
+            <tr>
+                <td>@student.FullName</td>
+                <td>@student.Email</td>
+                <td>@(student.Advisor != null ? student.Advisor.FullName : "Danışman yok")</td>
+                <td>
+                    @Html.ActionLink("Sil", "DeleteStudent", "Admin", new { id = student.StudentId }, new { @class = "btn btn-danger btn-sm" })
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
