@@ -16,6 +16,7 @@
 
 @using (Html.BeginForm())
 {
+    @Html.Hidden("studentId", Session["StudentId"])
     <table class="table">
         <thead>
             <tr>
@@ -67,6 +68,13 @@
         $(document).ready(function () {
             $(".aktsCheckbox").change(calculateAkts);
             calculateAkts(); // Sayfa yüklenince kontrol et
+        });
+    </script>
+    <script>
+        window.addEventListener("pageshow", function (event) {
+            if (event.persisted || (window.performance && window.performance.navigation.type === 2)) {
+                window.location.reload();
+            }
         });
     </script>
 }

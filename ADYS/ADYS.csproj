@@ -143,6 +143,10 @@
     <Compile Include="Migrations\202507101430220_AddDepartmentEntity.Designer.cs">
       <DependentUpon>202507101430220_AddDepartmentEntity.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\202507131333119_AddedCourseCredits.cs" />
+    <Compile Include="Migrations\202507131333119_AddedCourseCredits.Designer.cs">
+      <DependentUpon>202507131333119_AddedCourseCredits.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\Advisor.cs" />
     <Compile Include="Models\Course.cs" />
@@ -226,6 +230,7 @@
     <Content Include="Views\Admin\CreateDepartment.cshtml" />
     <Content Include="Views\Admin\EditDepartment.cshtml" />
     <Content Include="Views\Admin\Review.cshtml" />
+    <Content Include="Views\Login\AlreadyLoggedIn.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
@@ -263,6 +268,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\202507101430220_AddDepartmentEntity.resx">
       <DependentUpon>202507101430220_AddDepartmentEntity.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202507131333119_AddedCourseCredits.resx">
+      <DependentUpon>202507131333119_AddedCourseCredits.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>

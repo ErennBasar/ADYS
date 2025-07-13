@@ -14,12 +14,19 @@ namespace ADYS.Controllers
         private readonly UniversityContext db = new UniversityContext();
 
         // GET: Student
-        // Öğrenci paneli
-        public ActionResult Dashboard()
+        // Öğrenci panelis
+        [OutputCache(NoStore = true, Duration = 0, VaryByParam = "*")]
+        public ActionResult Dashboard(int studentId)
         {
-            int studentId = (int)(Session["StudentId"] ?? 0);
-            if (studentId == 0)
-                return RedirectToAction("Student", "Login");
+            if (Session["UserRole"]?.ToString() != "Student" 
+                || Session["StudentId"] == null 
+                || (int)Session["StudentId"] != studentId)
+            {
+                TempData["ErrorMessage"] = "Bu sayfaya erişmek için giriş yapmalısınız.";
+                return RedirectToAction("Index", "Login");
+            }
+
+           
 
             var student = db.Students
                              .Include("Advisor")
@@ -48,11 +55,16 @@ namespace ADYS.Controllers
             return View(model);
         }
         // GET: Student/SelectCourses
-        public ActionResult SelectCourses()
+        [OutputCache(NoStore = true, Duration = 0, VaryByParam = "*")]
+        public ActionResult SelectCourses(int studentId)
         {
-            int studentId = (int)(Session["StudentId"] ?? 0);
-            if (studentId == 0)
-                return RedirectToAction("Student", "Login");
+            if (Session["UserRole"]?.ToString() != "Student"
+                || Session["StudentId"] == null
+                || (int)Session["StudentId"] != studentId)
+            {
+                TempData["ErrorMessage"] = "Bu sayfaya erişmek için giriş yapmalısınız.";
+                return RedirectToAction("Index", "Login");
+            }
 
             var selectedCourseIds = db.CourseSelections
                 .Where(cs => cs.StudentId == studentId)
@@ -76,6 +88,7 @@ namespace ADYS.Controllers
 
         // POST: Student/SelectCourses
         [HttpPost]
+        [OutputCache(NoStore = true, Duration = 0, VaryByParam = "*")]
         public ActionResult SelectCourses(List<CourseSelectionViewModel> selectedCourses)
         {
             int studentId = (int)(Session["StudentId"] ?? 0);
@@ -122,7 +135,7 @@ namespace ADYS.Controllers
             }
 
             db.SaveChanges();
-            return RedirectToAction("Dashboard");
+            return RedirectToAction("Dashboard","Student",new {studentId = studentId}); 
         }
 
 

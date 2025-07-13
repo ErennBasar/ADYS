@@ -1,0 +1,13 @@
+﻿
+@{
+    Layout = null;
+    ViewBag.Title = "Uyarı";
+}
+
+<h3 class="text-warning">@ViewBag.Message</h3>
+
+<p>
+    <a href="@Url.Action("Logout", "Login")" class="btn btn-danger">Çıkış Yap</a>
+    veya
+    <a href="@Url.Action("Index", "Login")" class="btn btn-primary">Ana Sayfa</a>
+</p>

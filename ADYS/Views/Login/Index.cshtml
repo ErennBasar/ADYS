@@ -24,4 +24,14 @@
     @Html.ActionLink("🛡️ Admin Girişi", "Admin", "Login", null, new { @class = "btn btn-warning", style = "padding: 10px 30px;" })
 
 </div>
+@section Scripts {
+    <script>
+        // Geri tuşunu ve sayfa geçmişini etkisizleştir
+        history.pushState(null, null, location.href);
+        window.onpopstate = function () {
+            history.go(1);
+        };
+    </script>
+}
+
 

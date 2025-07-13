@@ -19,7 +19,7 @@
     }
     else
     {
-<div class="alert alert-warning">⏳ Onay süreci devam ediyor.</div>
+        <div class="alert alert-warning">⏳ Onay süreci devam ediyor.</div>
     }
 
     <table class="table table-bordered">
@@ -62,3 +62,15 @@ else
 {
     <div class="alert alert-info">Henüz ders seçimi yapılmamış.</div>
 }
+
+@section Scripts {
+    <script>
+        // Geri gelinirse sayfayı yeniden yükle
+        window.addEventListener("pageshow", function (event) {
+            if (event.persisted || (window.performance && window.performance.navigation.type === 2)) {
+                window.location.reload();
+            }
+        });
+    </script>
+}
+

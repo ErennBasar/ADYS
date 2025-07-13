@@ -20,6 +20,11 @@ namespace ADYS.Controllers
         // GET: Login/Student
         public ActionResult Student()
         {
+            if (Session["UserRole"] != null)
+            {
+                ViewBag.Message = "Giriş yapmak için önce mevcut oturumdan çıkış yapınız.";
+                return View("AlreadyLoggedIn"); // Yeni bir View açacağız.
+            }
             return View(new LoginViewModel());
         }
 
@@ -42,7 +47,8 @@ namespace ADYS.Controllers
             Session["StudentId"] = student.StudentId;
             Session["StudentLoginTime"] = DateTime.Now;
             Session["UserRole"] = "Student";
-            return RedirectToAction("Dashboard", "Student");
+            return RedirectToAction("Dashboard", "Student", new { studentId = student.StudentId });
+
         }
 
 
@@ -50,6 +56,11 @@ namespace ADYS.Controllers
         // GET: Login/Advisor
         public ActionResult Advisor()
         {
+            if (Session["UserRole"] != null)
+            {
+                ViewBag.Message = "Giriş yapmak için önce mevcut oturumdan çıkış yapınız.";
+                return View("AlreadyLoggedIn");
+            }
             return View(new LoginViewModel());
         }
 
@@ -69,13 +80,18 @@ namespace ADYS.Controllers
             Session["AdvisorId"] = advisor.AdvisorId;
             Session["AdvisorLoginTime"] = DateTime.Now;
             Session["UserRole"] = "Advisor";
-            return RedirectToAction("Dashboard", "Advisor");
+            return RedirectToAction("Dashboard", "Advisor", new {advisorId = advisor.AdvisorId});
         }
 
 
         // GET: Login/Admin
         public ActionResult Admin()
         {
+            if (Session["UserRole"] != null)
+            {
+                ViewBag.Message = "Giriş yapmak için önce mevcut oturumdan çıkış yapınız.";
+                return View("AlreadyLoggedIn");
+            }
             return View(new LoginViewModel());
         }
 
@@ -99,6 +115,12 @@ namespace ADYS.Controllers
             
             Session.Clear(); // Tüm oturum verilerini temizler
             //Session.Abandon(); // Oturumu sonlandırır (güvenlik için)
+
+            Response.Cache.SetExpires(DateTime.UtcNow.AddDays(-1));
+            Response.Cache.SetValidUntilExpires(false);
+            Response.Cache.SetRevalidation(HttpCacheRevalidation.AllCaches);
+            Response.Cache.SetCacheability(HttpCacheability.NoCache);
+            Response.Cache.SetNoStore();
 
             return RedirectToAction("Index", "Login"); 
         }
