@@ -14,6 +14,18 @@
         @Html.LabelFor(m => m.CourseName)
         @Html.TextBoxFor(m => m.CourseName, new { @class = "form-control" })
     </div>
+    <div class="form-group">
+        @Html.LabelFor(m => m.DayOfWeek)
+        @Html.TextBoxFor(m => m.DayOfWeek, new { @class = "form-control", placeholder = "Örn: Pazartesi" })
+    </div>
+    <div class="form-group">
+        @Html.LabelFor(m => m.StartTime)
+        @Html.TextBoxFor(m => m.StartTime, new { @class = "form-control", type = "time" })
+    </div>
+    <div class="form-group">
+        @Html.LabelFor(m => m.EndTime)
+        @Html.TextBoxFor(m => m.EndTime, new { @class = "form-control", type = "time" })
+    </div>
 
     <div class="form-group">
         @Html.LabelFor(m => m.AKTS)

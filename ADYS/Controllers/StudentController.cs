@@ -6,6 +6,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
+using System.Data.Entity;
+
 
 namespace ADYS.Controllers
 {
@@ -26,7 +28,8 @@ namespace ADYS.Controllers
                 return RedirectToAction("Index", "Login");
             }
 
-           
+            var activeTerm = db.Terms.FirstOrDefault(t => t.IsActive);
+            ViewBag.ActiveTermName = activeTerm != null ? activeTerm.TermName : "Aktif dönem bulunmamaktadır.";
 
             var student = db.Students
                              .Include("Advisor")
@@ -58,6 +61,26 @@ namespace ADYS.Controllers
         [OutputCache(NoStore = true, Duration = 0, VaryByParam = "*")]
         public ActionResult SelectCourses(int studentId)
         {
+
+            // Aktif dönem kontrolü
+            var activeTerm = db.Terms.FirstOrDefault(t => t.IsActive);
+            if (activeTerm == null)
+            {
+                TempData["ErrorMessage"] = "Şu anda aktif bir dönem bulunmamaktadır. Ders seçimi yapılamaz.";
+                return RedirectToAction("Dashboard", "Student", new { studentId });
+            }
+            
+            //  Tarih aralığı kontrolü
+            var now = DateTime.Now;
+            if (activeTerm.CourseSelectionStart.HasValue && activeTerm.CourseSelectionEnd.HasValue)
+            {
+                if (now < activeTerm.CourseSelectionStart.Value || now > activeTerm.CourseSelectionEnd.Value)
+                {
+                    TempData["ErrorMessage"] = $"Ders seçimi yalnızca {activeTerm.CourseSelectionStart:dd.MM.yyyy} - {activeTerm.CourseSelectionEnd:dd.MM.yyyy} tarihleri arasında yapılabilir.";
+                    return RedirectToAction("Dashboard", "Student", new { studentId });
+                }
+            }
+            
             if (Session["UserRole"]?.ToString() != "Student"
                 || Session["StudentId"] == null
                 || (int)Session["StudentId"] != studentId)
@@ -66,19 +89,22 @@ namespace ADYS.Controllers
                 return RedirectToAction("Index", "Login");
             }
 
+
             var selectedCourseIds = db.CourseSelections
                 .Where(cs => cs.StudentId == studentId)
                 .Select(cs => cs.CourseId)
                 .ToList();
 
-            var courses = db.Courses.ToList();
+            var courses = db.Courses.Include(c => c.Advisor).ToList();
+
 
             var model = courses.Select(c => new CourseSelectionViewModel
             {
                 CourseId = c.CourseId,
                 CourseName = c.CourseName,
                 AKTS = c.AKTS,
-                IsSelected = selectedCourseIds.Contains(c.CourseId)
+                IsSelected = selectedCourseIds.Contains(c.CourseId),
+                AdvisorName = c.Advisor?.FullName ?? "Belirtilmemiş"
             }).ToList();
 
             
@@ -103,7 +129,8 @@ namespace ADYS.Controllers
 
             if (totalAkts > 30)
             {
-                ModelState.AddModelError("", "Toplam AKTS 30'dan fazla olamaz.");
+                
+                TempData["ErrorMessage"] = "Toplam AKTS 30'dan fazla olamaz.";
 
                 // Ders listesini tekrar yükle (çünkü View yeniden çiziliyor)
                 var allCourses = db.Courses.ToList();
@@ -130,7 +157,7 @@ namespace ADYS.Controllers
                 {
                     StudentId = studentId,
                     CourseId = course.CourseId,
-                    IsApprovedByAdvisor = false
+                    IsApprovedByAdvisor = null
                 });
             }
 

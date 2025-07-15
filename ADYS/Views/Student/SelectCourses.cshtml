@@ -5,6 +5,12 @@
 }
 
 <h2>Ders Seçimi</h2>
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger text-center" style="margin-top: 15px;">
+        @TempData["ErrorMessage"]
+    </div>
+}
 
 @if (!ViewData.ModelState.IsValid)
 {
@@ -22,6 +28,8 @@
             <tr>
                 <th>Seç</th>
                 <th>Ders Adı</th>
+                <th>Ders Zamanı</th>
+                <th>Dersi veren</th>
                 <th>AKTS</th>
             </tr>
         </thead>
@@ -36,6 +44,8 @@
                         @Html.HiddenFor(m => m[i].AKTS)
                     </td>
                     <td>@Model[i].CourseName</td>
+                    <td>@Model[i].DayOfWeek @Model[i].StartTime.ToString(@"hh\:mm") - @Model[i].EndTime.ToString(@"hh\:mm")</td>
+                    <td>@Model[i].AdvisorName</td>
                     <td>@Model[i].AKTS</td>
 
                 </tr>
@@ -57,11 +67,20 @@
             });
             $("#totalAkts").text(total);
 
-            // Eğer toplam AKTS 30'u aşarsa butonu disable yap
+            // Hata mesajı kutusu kontrolü
+            var errorDiv = $("#aktsErrorMessage");
+
             if (total > 30) {
                 $("#submitButton").prop("disabled", true);
+
+                if (errorDiv.length === 0) {
+                    $("<div id='aktsErrorMessage' class='alert alert-danger text-center' style='margin-top: 15px;'>Toplam AKTS 30'dan fazla olamaz.</div>").insertBefore("form");
+                }
             } else {
                 $("#submitButton").prop("disabled", false);
+                if (errorDiv.length > 0) {
+                    errorDiv.remove();
+                }
             }
         }
 
@@ -77,6 +96,7 @@
             }
         });
     </script>
+    
 }
 
 

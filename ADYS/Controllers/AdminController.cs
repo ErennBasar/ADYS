@@ -336,6 +336,81 @@ namespace ADYS.Controllers
 
             return View(model);
         }
+        // GET: Admin/ManageTerms
+        public ActionResult ManageTerms()
+        {
+            if (Session["UserRole"] == null || Session["UserRole"].ToString() != "Admin")
+            {
+                TempData["ErrorMessage"] = "Bu sayfaya erişmek için giriş yapmalısınız.";
+                return RedirectToAction("Index", "Login");
+            }
+
+            var terms = db.Terms.ToList();
+            return View(terms);
+        }
+
+
+        // GET: Admin/CreateOrEditTerm
+        public ActionResult CreateOrEditTerm(int? id)
+        {
+            if (Session["UserRole"] == null || Session["UserRole"].ToString() != "Admin")
+            {
+                TempData["ErrorMessage"] = "Bu sayfaya erişmek için giriş yapmalısınız.";
+                return RedirectToAction("Index", "Login");
+            }
+            if (id == null)
+                return View(new Term()); // Yeni dönem
+
+            var term = db.Terms.Find(id);
+            if (term == null)
+                return HttpNotFound();
+
+            return View(term); // Güncelleme
+        }
+
+        // POST: Admin/CreateOrEditTerm
+        [HttpPost]
+        public ActionResult CreateOrEditTerm(Term term)
+        {
+            if (!ModelState.IsValid)
+                return View(term);
+
+            // Eğer yeni eklenmek istenen ya da güncellenen dönem aktifse, başka aktif dönem olup olmadığı kontrol edilir
+            if (term.IsActive)
+            {
+                bool anotherActiveExists = db.Terms.Any(t => t.IsActive && t.TermId != term.TermId);
+                if (anotherActiveExists)
+                {
+                    TempData["ErrorMessage"] = "Zaten aktif bir dönem var. Aynı anda birden fazla dönem aktif olamaz.";
+                    return View(term);
+                }
+            }
+
+            if (term.TermId == 0)
+            {
+                db.Terms.Add(term); // Yeni dönem
+            }
+            else
+            {
+                db.Entry(term).State = System.Data.Entity.EntityState.Modified; // Güncelle
+            }
+
+            db.SaveChanges();
+            TempData["SuccessMessage"] = "Dönem başarıyla kaydedildi.";
+            return RedirectToAction("ManageTerms");
+        }
+
+        // GET: Admin/DeleteTerm
+        public ActionResult DeleteTerm(int id)
+        {
+            var term = db.Terms.Find(id);
+            if (term == null) return HttpNotFound();
+
+            db.Terms.Remove(term);
+            db.SaveChanges();
+            return RedirectToAction("ManageTerms");
+        }
+
 
 
     }

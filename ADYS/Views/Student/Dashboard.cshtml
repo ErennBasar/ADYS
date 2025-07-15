@@ -1,6 +1,14 @@
 ﻿@model ADYS.ViewModels.StudentDashboardViewModel
 
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-warning text-center">
+        @TempData["ErrorMessage"]
+    </div>
+}
+
 <h2>Merhaba, @Model.StudentName</h2>
+<p><strong>Aktif Dönem:</strong> @ViewBag.ActiveTermName</p>
 
 <div>
     <h4>Danışman Bilgileri</h4>
@@ -50,7 +58,7 @@
                         }
                         else
                         {
-                            <span class="text-muted">Bekliyor</span>
+                            <span class="text-warning">Onayda</span>
                         }
                     </td>
                 </tr>

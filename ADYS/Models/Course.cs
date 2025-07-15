@@ -17,6 +17,9 @@ namespace ADYS.Models
 
         public int DepartmentId { get; set; }
         public virtual Department Department { get; set; }
+        public string DayOfWeek { get; set; } 
+        public TimeSpan StartTime { get; set; } 
+        public TimeSpan EndTime { get; set; }   
 
         public virtual ICollection<CourseSelection> CourseSelections { get; set; }
     }

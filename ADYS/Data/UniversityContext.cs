@@ -10,6 +10,8 @@ namespace ADYS.Data
         public DbSet<Student> Students { get; set; }
         public DbSet<Advisor> Advisors { get; set; }
         public DbSet<Course> Courses { get; set; }
+        public DbSet<Term> Terms { get; set; }
+
         public DbSet<CourseSelection> CourseSelections { get; set; }
         public DbSet<Department> Departments { get; set; } // department tanımını unutma
 

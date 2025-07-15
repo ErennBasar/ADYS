@@ -13,7 +13,12 @@
         <tr>
             <td>@item.CourseName</td>
             <td>@item.AKTS</td>
-            <td>@(item.IsApproved ? "Onaylı" : "Bekliyor")</td>
+            <td>
+                @(item.IsApproved == true ? "Onaylandı"
+                : item.IsApproved == false ? "Reddedildi"
+                : "Onayda")
+            </td>
+
         </tr>
     }
 </table>

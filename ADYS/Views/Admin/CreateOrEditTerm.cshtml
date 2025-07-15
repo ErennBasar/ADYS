@@ -1,0 +1,37 @@
+﻿@model ADYS.Models.Term
+@{
+    ViewBag.Title = Model.TermId == 0 ? "Yeni Dönem" : "Dönemi Güncelle";
+}
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger text-center">@TempData["ErrorMessage"]</div>
+}
+<h2>@ViewBag.Title</h2>
+
+@using (Html.BeginForm())
+{
+    @Html.HiddenFor(m => m.TermId)
+
+    <div class="form-group">
+        @Html.LabelFor(m => m.TermName)
+        @Html.TextBoxFor(m => m.TermName, new { @class = "form-control" })
+    </div>
+
+    <div class="form-group">
+        @Html.LabelFor(m => m.IsActive)
+        @Html.CheckBoxFor(m => m.IsActive)
+    </div>
+
+    <div class="form-group">
+        @Html.LabelFor(m => m.CourseSelectionStart, "Ders Seçim Başlangıç")
+        @Html.TextBoxFor(m => m.CourseSelectionStart, "{0:yyyy-MM-dd}", new { type = "date", @class = "form-control" })
+    </div>
+
+    <div class="form-group">
+        @Html.LabelFor(m => m.CourseSelectionEnd, "Ders Seçim Bitiş")
+        @Html.TextBoxFor(m => m.CourseSelectionEnd, "{0:yyyy-MM-dd}", new { type = "date", @class = "form-control" })
+    </div>
+
+    <button type="submit" class="btn btn-success">Kaydet</button>
+}
+

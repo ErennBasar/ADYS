@@ -99,6 +99,31 @@ namespace ADYS
                     }
 
                 }
+                // Dönemler yoksa ekle
+                if (!db.Terms.Any())
+                {
+                    var terms = new List<Term>
+                    {
+                        new Term
+                        {
+                            TermName = "2025 Güz",
+                            IsActive = true,
+                            CourseSelectionStart = new DateTime(2025, 9, 1),
+                            CourseSelectionEnd = new DateTime(2025, 9, 15)
+                        },
+                        new Term
+                        {
+                            TermName = "2026 Bahar",
+                            IsActive = false,
+                            CourseSelectionStart = new DateTime(2026, 2, 1),
+                            CourseSelectionEnd = new DateTime(2026, 2, 15)
+                        }
+                    };
+
+                    db.Terms.AddRange(terms);
+                    db.SaveChanges();
+                }
+
 
             }
 

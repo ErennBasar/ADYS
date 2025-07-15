@@ -147,6 +147,18 @@
     <Compile Include="Migrations\202507131333119_AddedCourseCredits.Designer.cs">
       <DependentUpon>202507131333119_AddedCourseCredits.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\202507140745023_SyncModelChanges.cs" />
+    <Compile Include="Migrations\202507140745023_SyncModelChanges.Designer.cs">
+      <DependentUpon>202507140745023_SyncModelChanges.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202507140844261_AddTermTable.cs" />
+    <Compile Include="Migrations\202507140844261_AddTermTable.Designer.cs">
+      <DependentUpon>202507140844261_AddTermTable.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202507141334549_AddCourseSchedule.cs" />
+    <Compile Include="Migrations\202507141334549_AddCourseSchedule.Designer.cs">
+      <DependentUpon>202507141334549_AddCourseSchedule.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\Advisor.cs" />
     <Compile Include="Models\Course.cs" />
@@ -231,6 +243,9 @@
     <Content Include="Views\Admin\EditDepartment.cshtml" />
     <Content Include="Views\Admin\Review.cshtml" />
     <Content Include="Views\Login\AlreadyLoggedIn.cshtml" />
+    <Content Include="Views\Admin\ManageTerms.cshtml" />
+    <Content Include="Views\Admin\CreateTerm.cshtml" />
+    <Content Include="Views\Admin\CreateOrEditTerm.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
@@ -271,6 +286,15 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\202507131333119_AddedCourseCredits.resx">
       <DependentUpon>202507131333119_AddedCourseCredits.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202507140745023_SyncModelChanges.resx">
+      <DependentUpon>202507140745023_SyncModelChanges.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202507140844261_AddTermTable.resx">
+      <DependentUpon>202507140844261_AddTermTable.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202507141334549_AddCourseSchedule.resx">
+      <DependentUpon>202507141334549_AddCourseSchedule.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>

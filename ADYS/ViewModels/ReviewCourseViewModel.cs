@@ -10,6 +10,6 @@ namespace ADYS.ViewModels
         public int CourseSelectionId { get; set; }
         public string CourseName { get; set; }
         public int AKTS { get; set; }
-        public bool IsApproved { get; set; } 
+        public bool? IsApproved { get; set; } 
     }
 }

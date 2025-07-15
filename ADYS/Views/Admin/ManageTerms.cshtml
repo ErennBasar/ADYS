@@ -1,0 +1,38 @@
+﻿@model List<ADYS.Models.Term>
+@{
+    ViewBag.Title = "Dönem Yönetimi";
+}
+
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success text-center">@TempData["SuccessMessage"]</div>
+}
+<h2>Dönem Yönetimi</h2>
+
+<p>
+    @Html.ActionLink("Yeni Dönem Ekle", "CreateOrEditTerm", null, new { @class = "btn btn-primary" })
+</p>
+
+<table class="table">
+    <tr>
+        <th>Adı</th>
+        <th>Durum</th>
+        <th>Seçim Başlangıç</th>
+        <th>Seçim Bitiş</th>
+        <th>İşlemler</th>
+    </tr>
+    @foreach (var term in Model)
+    {
+        <tr>
+            <td>@term.TermName</td>
+            <td>@(term.IsActive ? "Açık" : "Kapalı")</td>
+            <td>@term.CourseSelectionStart?.ToString("dd.MM.yyyy")</td>
+            <td>@term.CourseSelectionEnd?.ToString("dd.MM.yyyy")</td>
+            <td>
+                @Html.ActionLink("Güncelle", "CreateOrEditTerm", new { id = term.TermId }, new { @class = "btn btn-sm btn-warning" })
+                @Html.ActionLink("Sil", "DeleteTerm", new { id = term.TermId }, new { @class = "btn btn-sm btn-danger", onclick = "return confirm('Silmek istediğinize emin misiniz?');" })
+            </td>
+        </tr>
+    }
+</table>
+
