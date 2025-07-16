@@ -1,0 +1,34 @@
+﻿.custom-table {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-top: 20px;
+}
+
+.custom-table-header,
+.custom-table-row {
+    display: grid;
+    grid-template-columns: 1fr 2fr 2.5fr 2fr 1fr;
+    align-items: center;
+    padding: 12px 20px;
+    border-radius: 18px;
+    border: 2px solid #FFCB61; /* Altın sarısı çerçeve */
+}
+
+.custom-table-header {
+    background-color: #34699A;
+    color: white;
+    font-weight: bold;
+    border: 2px solid #34699A; /* Başlık kutusunun çerçevesi kendi rengiyle */
+}
+
+.custom-table-row {
+    background-color: #113F67;
+    color: #FFCB61;
+    transition: background 0.3s;
+}
+
+    .custom-table-row:hover {
+        background-color: #58A0C8;
+        border-color: #58A0C8;
+    }

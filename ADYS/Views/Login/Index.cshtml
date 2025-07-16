@@ -1,37 +1,42 @@
 ﻿@{
     ViewBag.Title = "Giriş Ekranı";
+    Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<h2 style="text-align:center;">Giriş Ekranı</h2>
+@section Styles {
+    <link href="~/Content/loginindex.css" rel="stylesheet" />
+}
 
-@if (TempData["LogoutMessage"] != null)
-{
-    <div class="alert alert-success text-center" style="margin-top: 20px;">
-        @TempData["LogoutMessage"]
+<div class="container">
+    <div class="login-box text-center">
+        <h2><i class="bi bi-box-arrow-in-right me-2"></i>Giriş Ekranı</h2>
+
+        @if (TempData["LogoutMessage"] != null)
+        {
+            <div class="alert alert-success text-center mt-3 shadow-sm">
+                <i class="bi bi-check-circle me-1"></i> @TempData["LogoutMessage"]
+            </div>
+        }
+
+        @if (TempData["ErrorMessage"] != null)
+        {
+            <div class="alert alert-danger text-center mt-3 shadow-sm">
+                <i class="bi bi-exclamation-triangle me-1"></i> @TempData["ErrorMessage"]
+            </div>
+        }
+
+        <div class="d-grid gap-3 mt-4">
+            @Html.ActionLink("🎓 Öğrenci Girişi", "Student", "Login", null, new { @class = "btn btn-custom btn-student" })
+            @Html.ActionLink("🧑‍🏫 Danışman Girişi", "Advisor", "Login", null, new { @class = "btn btn-custom btn-advisor" })
+            @Html.ActionLink("🛡️ Admin Girişi", "Admin", "Login", null, new { @class = "btn btn-custom btn-admin" })
+        </div>
     </div>
-}
-@if (TempData["ErrorMessage"] != null)
-{
-    <div class="alert alert-danger">
-        @TempData["ErrorMessage"]
-    </div>
-}
-
-
-<div style="text-align:center; margin-top:30px;">
-    @Html.ActionLink("🎓 Öğrenci Girişi", "Student", "Login", null, new { @class = "btn btn-primary", style = "margin-right: 20px; padding: 10px 30px;" })
-    @Html.ActionLink("🧑‍🏫 Danışman Girişi", "Advisor", "Login", null, new { @class = "btn btn-success", style = "margin-right: 20px; padding: 10px 30px;" })
-    @Html.ActionLink("🛡️ Admin Girişi", "Admin", "Login", null, new { @class = "btn btn-warning", style = "padding: 10px 30px;" })
-
 </div>
-@section Scripts {
-    <script>
-        // Geri tuşunu ve sayfa geçmişini etkisizleştir
-        history.pushState(null, null, location.href);
-        window.onpopstate = function () {
-            history.go(1);
-        };
-    </script>
-}
 
-
+<script>
+    // Geri tuşunu engelle
+    history.pushState(null, null, location.href);
+    window.onpopstate = function () {
+        history.go(1);
+    };
+</script>

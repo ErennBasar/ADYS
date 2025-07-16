@@ -1,0 +1,48 @@
+﻿body {
+    background-color: #374151;
+    color: #fff;
+    font-family: 'Segoe UI', sans-serif;
+}
+
+.login-box {
+    max-width: 600px;
+    margin: 100px auto;
+    background-color: #113F67;
+    padding: 40px;
+    border-radius: 15px;
+    box-shadow: 0 0 25px rgba(0,0,0,0.4);
+}
+
+.login-box h2 {
+    text-align: center;
+    margin-bottom: 30px;
+    color: #ccc;
+}
+
+.btn-custom {
+    padding: 12px 30px;
+    font-size: 18px;
+    font-weight: 500;
+    background-color: #113F67 !important; 
+    border: 2px solid transparent;
+    border-radius: 8px;
+    transition: 0.3s;
+    color: white !important;
+}
+
+.btn-student {
+    border-color: #d36030 !important;
+}
+
+.btn-advisor {
+    border-color: #cccc00 !important;
+}
+
+.btn-admin {
+    border-color: #336699 !important;
+}
+
+.btn-custom:hover {
+    background-color: #1e293b !important; /* biraz koyulaşsın */
+    opacity: 0.9;
+}

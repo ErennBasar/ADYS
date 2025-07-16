@@ -1,4 +1,9 @@
-﻿/* Set padding to keep content from hitting the edges */
+﻿body {
+    background-color: #374151 !important;
+    color: #f5f5f5;
+    font-family: 'Segoe UI', sans-serif;
+}
+/* Set padding to keep content from hitting the edges */
 .body-content {
     margin-top: 15px;
     padding-left: 15px;
@@ -18,3 +23,70 @@ select,
 textarea {
     max-width: 280px;
 }
+
+.login-form input,
+.login-form select,
+.login-form textarea {
+    max-width: 100% !important;
+}
+
+h2, h4, p {
+    color: #FFCB61;
+}
+
+.card {
+    background-color: #48556a !important;
+    border: none;
+    border-left: 5px solid #FF894F;
+}
+
+.card-header {
+    background-color: #34699A !important;
+    color: white !important;
+    font-weight: bold;
+}
+
+.table {
+    
+    background-color: #113F67;
+    color: #ccc;
+}
+
+    .table thead {
+        
+        background-color: #34699A;
+        color: white;
+    }
+
+.table-hover tbody tr:hover {
+    background-color: #58A0C8;
+}
+
+.badge {
+    font-size: 0.9em;
+}
+
+.bg-success {
+    background-color: #58A0C8 !important;
+    color: #113F67 !important;
+}
+
+.bg-danger {
+    background-color: #FF894F !important;
+}
+
+.bg-warning {
+    background-color: #FFCB61 !important;
+    color: #113F67 !important;
+}
+
+.alert {
+    border-radius: 8px;
+}
+
+.body-content, .container {
+    padding: 20px;
+    background-color: transparent;
+}
+
+
