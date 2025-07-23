@@ -26,8 +26,9 @@
         <tr>
             <td>@term.TermName</td>
             <td>@(term.IsActive ? "Açık" : "Kapalı")</td>
-            <td>@term.CourseSelectionStart?.ToString("dd.MM.yyyy")</td>
-            <td>@term.CourseSelectionEnd?.ToString("dd.MM.yyyy")</td>
+            <td>@(term.CourseSelectionStart?.ToString("dd.MM.yyyy"))</td>
+            <td>@(term.CourseSelectionEnd?.ToString("dd.MM.yyyy"))</td>
+
             <td>
                 @Html.ActionLink("Güncelle", "CreateOrEditTerm", new { id = term.TermId }, new { @class = "btn btn-sm btn-warning" })
                 @Html.ActionLink("Sil", "DeleteTerm", new { id = term.TermId }, new { @class = "btn btn-sm btn-danger", onclick = "return confirm('Silmek istediğinize emin misiniz?');" })

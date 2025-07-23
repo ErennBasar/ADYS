@@ -12,18 +12,24 @@ namespace ADYS.Controllers
     {
         private readonly UniversityContext db = new UniversityContext();
 
-        // 1. Danışman paneli (danışan listesi)
+        // 1. Danışman paneli (öğrenci listesi)
         public ActionResult Dashboard()
         {
             int advisorId = (int)(Session["AdvisorId"] ?? 0);
+
             if (advisorId == 0)
                 return RedirectToAction("Advisor", "Login");
 
-            var advisor = db.Advisors.Find(advisorId);
-            ViewBag.AdvisorName = advisor?.FullName ?? "Danışman";
+            var advisor = db.Users.Find(advisorId);
+            ViewBag.AdvisorName = advisor?.UserName ?? "Danışman";
 
-            var students = db.Students.Where(s => s.AdvisorId == advisorId).ToList();
-            return View(students);
+            // danışmana ait öğrenciler
+            var studentList = db.AdvisorAssignments
+                .Where(a => a.AdvisorId == advisorId)
+                .Select(a => a.Student)
+                .ToList();
+
+            return View(studentList);
         }
 
 
@@ -31,27 +37,44 @@ namespace ADYS.Controllers
         public ActionResult Students()
         {
             int advisorId = (int)(Session["AdvisorId"] ?? 0);
+
             if (advisorId == 0)
                 return RedirectToAction("Advisor", "Login");
 
+            var advisor = db.Users.Find(advisorId);
+            ViewBag.AdvisorName = advisor?.UserName ?? "Danışman";
 
-            var students = db.Students
-                .Where(s => s.AdvisorId == advisorId && s.CourseSelections.Any())
+
+            // danışmana ait öğrenciler
+            var studentList = db.AdvisorAssignments
+                .Where(a => a.AdvisorId == advisorId)
+                .Select(a => a.Student)
+                .Where(s => db.CourseSelections.Any(cs => cs.StudentId == s.UserId))
                 .ToList();
 
-            return View(students);
+            return View(studentList);
         }
 
         // 3. Onay paneli: öğrencinin seçtiği dersler
         public ActionResult Review(int studentId)
         {
-            var student = db.Students
-                .Include("CourseSelections.Course")
-                .FirstOrDefault(s => s.StudentId == studentId);
+            int advisorId = (int)(Session["AdvisorId"] ?? 0);
+
+            var assignment = db.AdvisorAssignments
+                       .FirstOrDefault(a => a.StudentId == studentId && a.AdvisorId == advisorId);
+
+            var student = db.Users
+                   .Include("CourseSelections.Course")
+                  .FirstOrDefault(s => s.UserId == studentId);
 
             if (student == null) return HttpNotFound();
 
-            var model = student.CourseSelections.Select(cs => new ReviewCourseViewModel
+            var selections = db.CourseSelections
+                .Include("Course")
+                .Where(cs => cs.StudentId == studentId)
+                .ToList();
+
+            var model = selections.Select(cs => new ReviewCourseViewModel
             {
                 CourseSelectionId = cs.CourseSelectionId,
                 CourseName = cs.Course.CourseName,
@@ -59,8 +82,8 @@ namespace ADYS.Controllers
                 IsApproved = cs.IsApprovedByAdvisor
             }).ToList();
 
-            
-            ViewBag.StudentName = student.FullName;
+
+            ViewBag.StudentName = student.UserName;
             ViewBag.StudentId = studentId;
 
             return View(model);

@@ -7,13 +7,13 @@ namespace ADYS.Migrations
     using System.Resources;
     
     [GeneratedCode("EntityFramework.Migrations", "6.5.1")]
-    public sealed partial class InitialCreate : IMigrationMetadata
+    public sealed partial class AddCourseSelectionsToUser : IMigrationMetadata
     {
-        private readonly ResourceManager Resources = new ResourceManager(typeof(InitialCreate));
+        private readonly ResourceManager Resources = new ResourceManager(typeof(AddCourseSelectionsToUser));
         
         string IMigrationMetadata.Id
         {
-            get { return "202507100634317_InitialCreate"; }
+            get { return "202507191608125_AddCourseSelectionsToUser"; }
         }
         
         string IMigrationMetadata.Source

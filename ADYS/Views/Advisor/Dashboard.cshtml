@@ -1,29 +1,50 @@
-﻿@model List<ADYS.Models.Student>
+﻿@model List<ADYS.Models.User>
 
 @{
     ViewBag.Title = "Danışman Paneli";
 }
 
-<h2>@ViewBag.AdvisorName</h2>
+<div class="col-12">
+    <div class="card shadow-lg ">
+        <div class="card-header text-white" style="background-color:#34699A;">
+            <h2>@ViewBag.AdvisorName</h2>
 
-<p>Danışman öğrencilerinizin listesi:</p>
+            <p>Danışman öğrencilerinizin listesi:</p>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table id="advisorStudents" class="display custom-datatable">
+                    <thead>
+                        <tr>
+                            <th>Öğrenci Adı</th>
+                            <th>İşlem</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var student in Model)
+                        {
+                            <tr>
+                                <td>@student.UserName</td>
+                                <td>
+                                    @Html.ActionLink("Dersleri İncele", "Review", "Advisor", new { studentId = student.UserId }, new { @class = "btn btn-sm" })
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
 
-<table class="table table-striped table-bordered">
-    <thead>
-        <tr>
-            <th>Öğrenci Adı</th>
-            <th>İşlem</th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var student in Model)
-        {
-            <tr>
-                <td>@student.FullName</td>
-                <td>
-                    @Html.ActionLink("Dersleri İncele", "Review", "Advisor", new { studentId = student.StudentId }, new { @class = "btn btn-info btn-sm" })
-                </td>
-            </tr>
-        }
-    </tbody>
-</table>
+    @section Scripts {
+        <script>
+            $(document).ready(function () {
+                $('#advisorStudents').DataTable({
+                    paging: true,
+                    searching: true,
+                    ordering: true,
+                });
+            });
+        </script>
+    }

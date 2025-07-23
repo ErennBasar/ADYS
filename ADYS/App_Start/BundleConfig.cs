@@ -22,6 +22,9 @@ namespace ADYS
             bundles.Add(new Bundle("~/bundles/bootstrap").Include(
                       "~/Scripts/bootstrap.js"));
 
+            //bundles.Add(new ScriptBundle("~/bundles/datatables").Include(
+            //"~/Scripts/jquery.dataTables.min.js")); // bu dosyayı projenin Scripts klasörüne indirmen gerek
+           
             bundles.Add(new StyleBundle("~/Content/css").Include(
                       "~/Content/bootstrap.css",
                       "~/Content/site.css"));

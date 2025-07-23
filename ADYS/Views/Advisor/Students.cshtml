@@ -1,23 +1,48 @@
-﻿@model List<ADYS.Models.Student>
+﻿@model List<ADYS.Models.User>
 
-<h2>Danışman Öğrencileri</h2>
 
-<table class="table">
-    <thead>
-        <tr>
-            <th>Ad Soyad</th>
-            <th>İşlem</th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var student in Model)
-        {
-            <tr>
-                <td>@student.FullName</td>
-                <td>
-                    @Html.ActionLink("Dersleri İncele", "Review", "Advisor", new { studentId = student.StudentId }, new { @class = "btn btn-primary" })
-                </td>
-            </tr>
-        }
-    </tbody>
-</table>
+<div class="col-12">
+    <div class="card shadow-lg ">
+        <div class="card-header text-white" style="background-color:#34699A;">
+          
+            <h2>Danışman Öğrencileri</h2>
+
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+
+                <table id="advisorStudentsSelectedCourse" class="display custom-datatable">
+                    <thead>
+                        <tr>
+                            <th>Ad Soyad</th>
+                            <th>İşlem</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var student in Model)
+                        {
+                            <tr>
+                                <td>@student.UserName</td>
+                                <td>
+                                    @Html.ActionLink("Dersleri İncele", "Review", "Advisor", new { studentId = student.UserId }, new { @class = "btn btn-info btn-sm" })
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            $('#advisorStudentsSelectedCourse').DataTable({
+                paging: true,
+                searching: true,
+                ordering: true,
+            });
+        });
+    </script>
+}

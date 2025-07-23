@@ -135,37 +135,35 @@
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
-    <Compile Include="Migrations\202507100634317_InitialCreate.cs" />
-    <Compile Include="Migrations\202507100634317_InitialCreate.Designer.cs">
-      <DependentUpon>202507100634317_InitialCreate.cs</DependentUpon>
+    <Compile Include="Migrations\202507191343584_InitialCreate.cs" />
+    <Compile Include="Migrations\202507191343584_InitialCreate.Designer.cs">
+      <DependentUpon>202507191343584_InitialCreate.cs</DependentUpon>
     </Compile>
-    <Compile Include="Migrations\202507101430220_AddDepartmentEntity.cs" />
-    <Compile Include="Migrations\202507101430220_AddDepartmentEntity.Designer.cs">
-      <DependentUpon>202507101430220_AddDepartmentEntity.cs</DependentUpon>
+    <Compile Include="Migrations\202507191608125_AddCourseSelectionsToUser.cs" />
+    <Compile Include="Migrations\202507191608125_AddCourseSelectionsToUser.Designer.cs">
+      <DependentUpon>202507191608125_AddCourseSelectionsToUser.cs</DependentUpon>
     </Compile>
-    <Compile Include="Migrations\202507131333119_AddedCourseCredits.cs" />
-    <Compile Include="Migrations\202507131333119_AddedCourseCredits.Designer.cs">
-      <DependentUpon>202507131333119_AddedCourseCredits.cs</DependentUpon>
+    <Compile Include="Migrations\202507191951369_AddUsers.cs" />
+    <Compile Include="Migrations\202507191951369_AddUsers.Designer.cs">
+      <DependentUpon>202507191951369_AddUsers.cs</DependentUpon>
     </Compile>
-    <Compile Include="Migrations\202507140745023_SyncModelChanges.cs" />
-    <Compile Include="Migrations\202507140745023_SyncModelChanges.Designer.cs">
-      <DependentUpon>202507140745023_SyncModelChanges.cs</DependentUpon>
+    <Compile Include="Migrations\202507192011500_UpdateModels.cs" />
+    <Compile Include="Migrations\202507192011500_UpdateModels.Designer.cs">
+      <DependentUpon>202507192011500_UpdateModels.cs</DependentUpon>
     </Compile>
-    <Compile Include="Migrations\202507140844261_AddTermTable.cs" />
-    <Compile Include="Migrations\202507140844261_AddTermTable.Designer.cs">
-      <DependentUpon>202507140844261_AddTermTable.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\202507141334549_AddCourseSchedule.cs" />
-    <Compile Include="Migrations\202507141334549_AddCourseSchedule.Designer.cs">
-      <DependentUpon>202507141334549_AddCourseSchedule.cs</DependentUpon>
+    <Compile Include="Migrations\202507201342100_AddAdvisorAssignmentTable.cs" />
+    <Compile Include="Migrations\202507201342100_AddAdvisorAssignmentTable.Designer.cs">
+      <DependentUpon>202507201342100_AddAdvisorAssignmentTable.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\Configuration.cs" />
-    <Compile Include="Models\Advisor.cs" />
+    <Compile Include="Models\AdvisorAssignment.cs" />
     <Compile Include="Models\Course.cs" />
     <Compile Include="Models\CourseSelection.cs" />
     <Compile Include="Models\Department.cs" />
-    <Compile Include="Models\Student.cs" />
+    <Compile Include="Models\Role.cs" />
     <Compile Include="Models\Term.cs" />
+    <Compile Include="Models\User.cs" />
+    <Compile Include="Models\UserRole.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ViewModels\AdvisorDashboardViewModel.cs" />
     <Compile Include="ViewModels\CourseSelectionViewModel.cs" />
@@ -209,6 +207,7 @@
     <Content Include="Scripts\jquery-3.7.0.slim.js" />
     <Content Include="Scripts\jquery-3.7.0.slim.min.js" />
     <None Include="Scripts\jquery.validate-vsdoc.js" />
+    <Content Include="Scripts\jquery.dataTables.min.js" />
     <Content Include="Scripts\jquery.validate.js" />
     <Content Include="Scripts\jquery.validate.min.js" />
     <Content Include="Scripts\jquery.validate.unobtrusive.js" />
@@ -249,6 +248,7 @@
     <Content Include="Views\Admin\ManageTerms.cshtml" />
     <Content Include="Views\Admin\CreateTerm.cshtml" />
     <Content Include="Views\Admin\CreateOrEditTerm.cshtml" />
+    <Content Include="Views\Login\GeneralLogin.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
@@ -281,23 +281,20 @@
     <Content Include="Scripts\jquery-3.7.0.min.map" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Migrations\202507100634317_InitialCreate.resx">
-      <DependentUpon>202507100634317_InitialCreate.cs</DependentUpon>
+    <EmbeddedResource Include="Migrations\202507191343584_InitialCreate.resx">
+      <DependentUpon>202507191343584_InitialCreate.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\202507101430220_AddDepartmentEntity.resx">
-      <DependentUpon>202507101430220_AddDepartmentEntity.cs</DependentUpon>
+    <EmbeddedResource Include="Migrations\202507191608125_AddCourseSelectionsToUser.resx">
+      <DependentUpon>202507191608125_AddCourseSelectionsToUser.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\202507131333119_AddedCourseCredits.resx">
-      <DependentUpon>202507131333119_AddedCourseCredits.cs</DependentUpon>
+    <EmbeddedResource Include="Migrations\202507191951369_AddUsers.resx">
+      <DependentUpon>202507191951369_AddUsers.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\202507140745023_SyncModelChanges.resx">
-      <DependentUpon>202507140745023_SyncModelChanges.cs</DependentUpon>
+    <EmbeddedResource Include="Migrations\202507192011500_UpdateModels.resx">
+      <DependentUpon>202507192011500_UpdateModels.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\202507140844261_AddTermTable.resx">
-      <DependentUpon>202507140844261_AddTermTable.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\202507141334549_AddCourseSchedule.resx">
-      <DependentUpon>202507141334549_AddCourseSchedule.cs</DependentUpon>
+    <EmbeddedResource Include="Migrations\202507201342100_AddAdvisorAssignmentTable.resx">
+      <DependentUpon>202507201342100_AddAdvisorAssignmentTable.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>

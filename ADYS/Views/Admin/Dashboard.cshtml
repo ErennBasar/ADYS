@@ -1,17 +1,19 @@
-﻿@model List<ADYS.Models.Student>
+﻿@model List<ADYS.ViewModels.StudentDashboardViewModel>
 
 @{
     ViewBag.Title = "Admin Paneli - Genel Kontrol";
+    Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<h2>Genel Kontrol Ekranı</h2>
+<h2>Genel Kontrol Erkanı</h2>
 
-<table class="table table-bordered table-striped">
+<table id="studentsDashboard" class="display">
     <thead>
         <tr>
             <th>Öğrenci Adı</th>
             <th>Email</th>
             <th>Danışman</th>
+            <th>Danışman Email</th>
             <th>İşlem</th>
         </tr>
     </thead>
@@ -19,14 +21,29 @@
         @foreach (var student in Model)
         {
             <tr>
-                <td>@student.FullName</td>
-                <td>@student.Email</td>
-                <td>@(student.Advisor != null ? student.Advisor.FullName : "-")</td>
+                <td>@student.StudentName </td>
+                <td>@student.StudentEmail  </td>
+                <td>@student.AdvisorName </td>
+                <td>@student.AdvisorEmail </td>
                 <td>
-                    @Html.ActionLink("Dersleri İncele", "Review", "Admin", new { studentId = student.StudentId }, new { @class = "btn btn-info btn-sm" })
+                    @Html.ActionLink("Dersleri İncele", "Review", "Admin", null, new { @class = "btn btn-sm" })
                 </td>
             </tr>
         }
     </tbody>
 </table>
+@section scripts{
+    
+    <script>
+
+        $(document).ready(function () {
+            $('#studentsDashboard').DataTable({
+                paging: true,
+                searching: true,
+                ordering: true,
+            })
+        });
+    </script>
+
+}
 

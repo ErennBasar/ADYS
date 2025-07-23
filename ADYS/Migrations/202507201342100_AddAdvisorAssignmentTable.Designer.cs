@@ -7,13 +7,13 @@ namespace ADYS.Migrations
     using System.Resources;
     
     [GeneratedCode("EntityFramework.Migrations", "6.5.1")]
-    public sealed partial class SyncModelChanges : IMigrationMetadata
+    public sealed partial class AddAdvisorAssignmentTable : IMigrationMetadata
     {
-        private readonly ResourceManager Resources = new ResourceManager(typeof(SyncModelChanges));
+        private readonly ResourceManager Resources = new ResourceManager(typeof(AddAdvisorAssignmentTable));
         
         string IMigrationMetadata.Id
         {
-            get { return "202507140745023_SyncModelChanges"; }
+            get { return "202507201342100_AddAdvisorAssignmentTable"; }
         }
         
         string IMigrationMetadata.Source

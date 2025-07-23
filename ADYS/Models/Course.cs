@@ -13,10 +13,11 @@ namespace ADYS.Models
         public int Kontenjan { get; set; } 
 
         public int AdvisorId { get; set; }
-        public virtual Advisor Advisor { get; set; }
+        public virtual User Advisor { get; set; }
 
         public int DepartmentId { get; set; }
         public virtual Department Department { get; set; }
+
         public string DayOfWeek { get; set; } 
         public TimeSpan StartTime { get; set; } 
         public TimeSpan EndTime { get; set; }   

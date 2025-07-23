@@ -7,13 +7,13 @@ namespace ADYS.Migrations
     using System.Resources;
     
     [GeneratedCode("EntityFramework.Migrations", "6.5.1")]
-    public sealed partial class AddedCourseCredits : IMigrationMetadata
+    public sealed partial class AddUsers : IMigrationMetadata
     {
-        private readonly ResourceManager Resources = new ResourceManager(typeof(AddedCourseCredits));
+        private readonly ResourceManager Resources = new ResourceManager(typeof(AddUsers));
         
         string IMigrationMetadata.Id
         {
-            get { return "202507131333119_AddedCourseCredits"; }
+            get { return "202507191951369_AddUsers"; }
         }
         
         string IMigrationMetadata.Source

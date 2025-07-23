@@ -1,0 +1,63 @@
+﻿@model ADYS.ViewModels.LoginViewModel
+
+@{
+    ViewBag.Title = "Genel Giriş";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@section Styles {
+    <link href="~/Content/login.css" rel="stylesheet" />
+}
+
+<div class="login-container">
+    <div class="login-card">
+        <div class="text-center mb-4">
+            <i class="bi bi-mortarboard-fill" style="font-size: 2.5rem; color: #0d6efd;"></i>
+            <h3 class="mt-2">Genel Giriş</h3>
+            <p class="text-muted">Sisteme giriş için bilgilerinizi giriniz.</p>
+        </div>
+
+        @if (TempData["LogoutMessage"] != null)
+        {
+            <div class="alert alert-success text-center">@TempData["LogoutMessage"]</div>
+        }
+
+        @using (Html.BeginForm("GeneralLogin", "Login", FormMethod.Post))
+        {
+            @Html.AntiForgeryToken()
+
+            <div class="form-group mb-3">
+                @Html.LabelFor(m => m.Email, new { @class = "form-label" })
+                @Html.TextBoxFor(m => m.Email, new { @class = "form-control", placeholder = "E-posta adresiniz", @type = "email", required = "required" })
+                @Html.ValidationMessageFor(m => m.Email, "", new { @class = "text-danger" })
+            </div>
+
+            <div class="form-group mb-4">
+                @Html.LabelFor(m => m.Password, new { @class = "form-label" })
+                @Html.PasswordFor(m => m.Password, new { @class = "form-control", placeholder = "Şifreniz", required = "required" })
+                @Html.ValidationMessageFor(m => m.Password, "", new { @class = "text-danger" })
+            </div>
+
+            if (!ViewData.ModelState.IsValid)
+            {
+                @Html.ValidationSummary(false, "", new { @class = "alert alert-danger text-center" })
+            }
+
+            <div class="d-grid">
+                <button type="submit" class="btn btn-primary w-100">Giriş Yap</button>
+            </div>
+        }
+
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        window.addEventListener("pageshow", function (event) {
+            if (event.persisted || (window.performance && window.performance.navigation.type === 2)) {
+                window.location.reload();
+            }
+        });
+    </script>
+}
+

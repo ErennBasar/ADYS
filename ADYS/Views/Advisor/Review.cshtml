@@ -3,6 +3,7 @@
     ViewBag.Title = "Ders Onay Paneli";
     int toplamAkts = Model.Sum(m => m.AKTS);
     bool hepsiOnayli = Model.All(m => m.IsApproved == true);
+    int studentId = Session["StudentId"] != null ? (int)Session["StudentId"] : 0;
 }
 
 <h2>@ViewBag.StudentName - Ders Seçimleri</h2>

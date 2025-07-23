@@ -1,5 +1,9 @@
 ﻿@model ADYS.ViewModels.StudentDashboardViewModel
 
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
 @if (TempData["ErrorMessage"] != null)
 {
     <div class="alert alert-danger text-center my-3 shadow-sm">
@@ -12,9 +16,9 @@
 
         <!-- Karşılama Kartı -->
         <div class="col-12">
-            <div class="card shadow-sm border-0" style="background-color:#374151; color: #FFCB61;">
+            <div class="card shadow-lg" style="background-color:#374151; color: #ccc;">
                 <div class="card-body">
-                    <h3 class="card-title mb-3">👋 Merhaba, <span style="color:#FF894F;">@Model.StudentName</span></h3>
+                    <h3 class="card-title mb-3">👋 Merhaba, <span style="color: orange;">@Model.StudentName</span></h3>
                     <p class="mb-1"><strong>Aktif Dönem:</strong> @ViewBag.ActiveTermName</p>
                 </div>
             </div>
@@ -22,7 +26,7 @@
 
         <!-- Danışman Bilgileri -->
         <div class="col-md-6">
-            <div class="card border-start border-4" style="border-color: #58A0C8;">
+            <div class="card shadow-lg">
                 <div class="card-header text-white" style="background-color:#113F67;">
                     🎓 Danışman Bilgileri
                 </div>
@@ -37,13 +41,13 @@
         <div class="col-md-6">
             @if (Model.AllApproved)
             {
-                <div class="alert shadow-sm h-100 d-flex align-items-center" style="background-color:#D4EDDA; color:#155724;">
+                <div class="alert shadow-sm h-100 d-flex align-items-center" style="background-color: #D4EDDA; color: #155724; border-radius: 40px;">
                     ✅ Tüm dersler danışmanınız tarafından onaylandı.
                 </div>
             }
             else
             {
-                <div class="alert shadow-sm h-100 d-flex align-items-center" style="background-color:#FFF3CD; color:#856404;">
+                <div class="alert shadow-sm h-100 d-flex align-items-center" style="background-color: #ccc; color: #856404; border-radius: 40px;">
                     ⏳ Onay süreci devam ediyor.
                 </div>
             }
@@ -51,7 +55,7 @@
 
         <!-- Ders Tablosu -->
         <div class="col-12">
-            <div class="card shadow-sm border-0">
+            <div class="card shadow-lg ">
                 <div class="card-header text-white" style="background-color:#34699A;">
                     📚 Seçilen Dersler
                 </div>
@@ -61,7 +65,7 @@
                         <p><strong>Toplam AKTS:</strong> @Model.TotalAKTS</p>
 
                         <div class="table-responsive">
-                            <table class="table table-hover align-middle">
+                            <table id ="viewCourses" class="display custom-datatable">  
                                 <thead style="background-color:#58A0C8; color:white;">
                                     <tr>
                                         <th>Ders Adı</th>
@@ -116,6 +120,15 @@
             if (event.persisted || (window.performance && window.performance.navigation.type === 2)) {
                 window.location.reload();
             }
+        });
+    </script>
+    <script>
+        $(document).ready(function () {
+            $('#viewCourses').DataTable({
+                paging: true,
+                searching: true,
+                ordering: true,
+            });
         });
     </script>
 }

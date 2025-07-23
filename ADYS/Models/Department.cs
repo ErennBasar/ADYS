@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 
 namespace ADYS.Models
 {
@@ -8,5 +9,7 @@ namespace ADYS.Models
 
         [Required]
         public string DepartmentName { get; set; }
+        public virtual ICollection<Course> Courses { get; set; }
+
     }
 }

@@ -18,6 +18,10 @@ namespace ADYS.ViewModels
         public string DayOfWeek { get; set; }
         public TimeSpan StartTime { get; set; }
         public TimeSpan EndTime { get; set; }
+        public int Capacity { get; set; }             
+        public int SelectedStudentCount { get; set; }  // dersi seçen öğrenci sayısı
+        public bool IsFull => SelectedStudentCount >= Capacity; // dersi seçen öğrenci sayısı kontenjandan eşit yada fazlaysa, IsFull = false
+
         public string DisplayTime => $"{DayOfWeek} {StartTime:hh\\:mm} - {EndTime:hh\\:mm}";
     }
 

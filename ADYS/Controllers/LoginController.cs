@@ -12,119 +12,68 @@ namespace ADYS.Controllers
     {
         private readonly UniversityContext db = new UniversityContext();
 
-        // GET: Login
-        public ActionResult Index()
+        // GET: GeneralLogin
+        public ActionResult GeneralLogin()
         {
-            return View();
-        }
-        // GET: Login/Student
-        public ActionResult Student()
-        {
-            if (Session["UserRole"] != null)
-            {
-                ViewBag.Message = "Giriş yapmak için önce mevcut oturumdan çıkış yapınız.";
-                return View("AlreadyLoggedIn"); // Yeni bir View açacağız.
-            }
+            //if (Session["UserRole"] != null)
+            //{
+            //    ViewBag.Message = "Giriş yapmak için önce mevcut oturumdan çıkış yapınız.";
+            //    return View("AlreadyLoggedIn"); // Yeni bir View açacağız.
+            //}
+            //return View(new LoginViewModel());
             return View(new LoginViewModel());
         }
 
-        // POST: Login/Student
+        // POST: GeneralLogin
         [HttpPost]
-        public ActionResult Student(LoginViewModel model)
+        public ActionResult GeneralLogin(LoginViewModel model)
         {
             if (!ModelState.IsValid)
             {
                 return View(model);
             }
+            var user = db.Users
+                .Include("UserRoles.Role")
+                .FirstOrDefault(s => s.Email == model.Email && s.Password == model.Password);
 
-            var student = db.Students.FirstOrDefault(s => s.Email == model.Email && s.Password == model.Password);
-            if (student == null)
+            if (user == null)
             {
                 ModelState.AddModelError("", "Geçersiz e-posta veya şifre.");
                 return View(model);
             }
 
-            Session["StudentId"] = student.StudentId;
-            Session["StudentLoginTime"] = DateTime.Now;
-            Session["UserRole"] = "Student";
-            return RedirectToAction("Dashboard", "Student", new { studentId = student.StudentId });
+            var userRole = user.UserRoles.FirstOrDefault();
+            var roleName = userRole.Role.RoleName;
 
-        }
+            Session["UserRole"] = roleName;
 
-
-
-        // GET: Login/Advisor
-        public ActionResult Advisor()
-        {
-            if (Session["UserRole"] != null)
+            if (roleName == "Student")
             {
-                ViewBag.Message = "Giriş yapmak için önce mevcut oturumdan çıkış yapınız.";
-                return View("AlreadyLoggedIn");
+                Session["StudentId"] = user.UserId;
+                return RedirectToAction("Dashboard", "Student", new { studentId = user.UserId });
             }
-            return View(new LoginViewModel());
-        }
-
-        // POST: Login/Advisor
-        [HttpPost]
-        public ActionResult Advisor(LoginViewModel model)
-        {
-            if (!ModelState.IsValid) return View(model);
-
-            var advisor = db.Advisors.FirstOrDefault(a => a.Email == model.Email);
-            if (advisor == null)
+            else if (roleName == "Advisor")
             {
-                ModelState.AddModelError("", "Danışman bulunamadı.");
-                return View(model);
+                Session["AdvisorId"] = user.UserId;
+                return RedirectToAction("Dashboard", "Advisor", new { advisorId = user.UserId });
             }
-
-            Session["AdvisorId"] = advisor.AdvisorId;
-            Session["AdvisorLoginTime"] = DateTime.Now;
-            Session["UserRole"] = "Advisor";
-            return RedirectToAction("Dashboard", "Advisor", new {advisorId = advisor.AdvisorId});
-        }
-
-
-        // GET: Login/Admin
-        public ActionResult Admin()
-        {
-            if (Session["UserRole"] != null)
+            else if (roleName == "Admin")
             {
-                ViewBag.Message = "Giriş yapmak için önce mevcut oturumdan çıkış yapınız.";
-                return View("AlreadyLoggedIn");
-            }
-            return View(new LoginViewModel());
-        }
-
-        // POST: Login/Admin
-        [HttpPost]
-        public ActionResult Admin(LoginViewModel model)
-        {
-            if (model.Email == "admin" && model.Password == "admin123")
-            {
-                Session["UserRole"] = "Admin";
-                Session["AdminLoginTime"] = DateTime.Now;
                 return RedirectToAction("Dashboard", "Admin");
             }
-
-            ModelState.AddModelError("", "Geçersiz admin giriş bilgisi.");
-            return View(model);
-        }
+            else
+            {
+                Session.Clear();
+                return RedirectToAction("GeneralLogin","Login");
+            }
+        }  
         public ActionResult Logout()
         {
-            TempData["LogoutMessage"] = "Başarıyla çıkış yaptınız.";
-            
-            Session.Clear(); // Tüm oturum verilerini temizler
-            //Session.Abandon(); // Oturumu sonlandırır (güvenlik için)
+            TempData["LogoutMessage"] = "Başarıyla Çıkış Yaptınız";
 
-            Response.Cache.SetExpires(DateTime.UtcNow.AddDays(-1));
-            Response.Cache.SetValidUntilExpires(false);
-            Response.Cache.SetRevalidation(HttpCacheRevalidation.AllCaches);
-            Response.Cache.SetCacheability(HttpCacheability.NoCache);
-            Response.Cache.SetNoStore();
+            Session.Clear();
 
-            return RedirectToAction("Index", "Login"); 
+            return RedirectToAction("GeneralLogin", "Login");
         }
-
-
     }
 }
