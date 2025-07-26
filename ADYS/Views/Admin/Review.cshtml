@@ -1,24 +1,84 @@
 ﻿@model List<ADYS.ViewModels.ReviewCourseViewModel>
 
-<h3>@ViewBag.StudentName - Ders Seçimleri</h3>
 
-<table class="table">
-    <tr>
-        <th>Ders</th>
-        <th>AKTS</th>
-        <th>Onay Durumu</th>
-    </tr>
-    @foreach (var item in Model)
-    {
-        <tr>
-            <td>@item.CourseName</td>
-            <td>@item.AKTS</td>
-            <td>
-                @(item.IsApproved == true ? "Onaylandı"
-                : item.IsApproved == false ? "Reddedildi"
-                : "Onayda")
-            </td>
+<div class="col-12">
+    <div class="card glass-card " color: #ccc;">
+        <div class="card-header text-white">
+            <h2 class="text-center m-0">
+                @ViewBag.StudentName - Ders Seçimleri
+            </h2>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table id="selectCourses" class="display custom-datatable">
+                    <thead>
+                        <tr>
+                            <th>Ders</th>
+                            <th>AKTS</th>
+                            <th>Onay Durumu</th>
+                            <th>İşlem</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model)
+                        {
+                            string durum = item.IsApproved == true ? "✔ Onaylandı"
+                                           : item.IsApproved == false ? "✖ Reddedildi"
+                                           : "⏳ Onayda";
+                            string durumClass = item.IsApproved == true ? "text-success"
+                                             : item.IsApproved == false ? "text-danger"
+                                             : "text-warning";
 
-        </tr>
-    }
-</table>
+                            <tr id="row-@item.CourseSelectionId">
+                                <td>@item.CourseName</td>
+                                <td>@item.AKTS</td>
+                                <td class="@durumClass fw-bold">@durum</td>
+                                <td>
+                                    <button class="btn btn-sm btn-success approve-btn" data-id="@item.CourseSelectionId" data-approve="true">Onayla</button>
+                                    <button class="btn btn-sm btn-danger approve-btn" data-id="@item.CourseSelectionId" data-approve="false">Reddet</button>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        $(function () {
+            $(".approve-btn").click(function () {
+                const id = $(this).data("id");
+                const approve = $(this).data("approve");
+
+                $.ajax({
+                    url: '@Url.Action("UpdateApproval", "Advisor")',
+                    method: 'POST',
+                    data: { courseSelectionId: id, approve: approve },
+                    success: function (res) {
+                        if (res.success) {
+                            location.reload();
+                        } else {
+                            alert("İşlem başarısız.");
+                        }
+                    },
+                    error: function () {
+                        alert("Sunucu hatası oluştu.");
+                    }
+                });
+            });
+        });
+    </script>
+    <script>
+
+        $(document).ready(function () {
+            $('#selectCourses').DataTable({
+                paging: true,
+                searching: true,
+                ordering: true,
+            })
+        });
+    </script>
+}

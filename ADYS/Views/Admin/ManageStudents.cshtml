@@ -4,71 +4,84 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-
-
-
-<h2>Öğrenci Tanımlamaları</h2>
-
-<h4>Yeni Öğrenci Ekle</h4>
-@using (Html.BeginForm("AddStudent", "Admin", FormMethod.Post))
-{
-    <div class="row">
-        <div class="form-group col-md-3">
-            @Html.Label("Ad Soyad")
-            @Html.TextBox("FullName", null, new { @class = "form-control" })
+<div class="col-12 mb-4">
+    <div class="card glass-card">
+        <div class="card-header text-white">
+            <h4 class="m-0">Yeni Öğrenci Ekle</h4>
         </div>
-        <div class="form-group col-md-3">
-            @Html.Label("Email")
-            @Html.TextBox("Email", null, new { @class = "form-control", type = "email" })
+        <div class="card-body">
+            @using (Html.BeginForm("AddStudent", "Admin", FormMethod.Post))
+            {
+                <div class="row">
+                    <div class="form-group col-md-3 mb-3">
+                        @Html.Label("Ad Soyad", new { @class = "form-label" })
+                        @Html.TextBox("FullName", null, new { @class = "form-control", placeholder = "Örn: Ahmet Yılmaz" })
+                    </div>
+                    <div class="form-group col-md-3 mb-3">
+                        @Html.Label("Email", new { @class = "form-label" })
+                        @Html.TextBox("Email", null, new { @class = "form-control", type = "email", placeholder = "ahmet@uni.edu.tr" })
+                    </div>
+                    <div class="form-group col-md-3 mb-3">
+                        @Html.Label("Şifre", new { @class = "form-label" })
+                        @Html.Password("Password", null, new { @class = "form-control", placeholder = "••••••" })
+                    </div>
+                    <div class="form-group col-md-3 mb-3">
+                        @Html.Label("Danışman", new { @class = "form-label" })
+                        @Html.DropDownList("AdvisorId", (SelectList)ViewBag.Advisors, "Seçiniz", new { @class = "form-select" })
+                    </div>
+                </div>
+
+                <div class="text-end mt-3">
+                    <button type="submit" class="btn px-4">Kaydet</button>
+                </div>
+            }
         </div>
-        <div class="form-group col-md-3">
-            @Html.Label("Şifre")
-            @Html.Password("Password", null, new { @class = "form-control" })
-        </div>
-        <div class="form-group col-md-3">
-            @Html.Label("Danışman")
-            @Html.DropDownList("AdvisorId", (SelectList)ViewBag.Advisors, "Seçiniz", new { @class = "form-control" })
+    </div>
+</div>
+
+    <div class="col-12">
+        <div class="card glass-card ">
+            <div class="card-header text-white">
+                <h4>Öğrenci Listesi</h4>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table id="viewStudents" class="display custom-datatable">
+                        <thead>
+                            <tr>
+                                <th>Ad Soyad</th>
+                                <th>Email</th>
+                                <th>Danışman</th>
+                                <th>İşlem</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var student in Model)
+                            {
+                                <tr>
+                                    <td>@student.StudentName </td>
+                                    <td>@student.StudentEmail </td>
+                                    <td>@(student.AdvisorName != null ? student.AdvisorName : "Danışman yok")</td>
+                                    <td>
+                                        @Html.ActionLink("Sil", "DeleteStudent", "Admin", new { id = student.StudentId }, new { @class = "btn btn-danger btn-sm" })
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
         </div>
     </div>
 
-    <div class="mt-3">
-        <button type="submit" class="btn btn-primary">Kaydet</button>
-    </div>
-}
-
-
-<hr />
-
-<h4>Öğrenci Listesi</h4>
-<table id="studentsDashboard" class="display">
-    <thead>
-        <tr>
-            <th>Ad Soyad</th>
-            <th>Email</th>
-            <th>Danışman</th>
-            <th>İşlem</th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var student in Model)
-        {
-            <tr>
-                <td>@student.StudentName </td>
-                <td>@student.StudentEmail </td>
-                <td>@(student.AdvisorName != null ? student.AdvisorName : "Danışman yok")</td>
-                <td>
-                    @Html.ActionLink("Sil", "DeleteStudent", "Admin", new { id = student.StudentId }, new { @class = "btn btn-danger btn-sm" })
-                </td>
-            </tr>
-        }
-    </tbody>
-</table>
-
-
-@section scripts {
-    <script>
-        $(document).ready(function () {
-            $('#studentsDashboard').DataTable(); // tablonun id'si "myTable" olmalı
-        });
-    </script>
-}
+    @section scripts {
+        <script>
+            $(document).ready(function () {
+                $('#viewStudents').DataTable({
+                    paging: true,
+                    searching: true,
+                    ordering: true,
+                });
+            });
+        </script>
+    }

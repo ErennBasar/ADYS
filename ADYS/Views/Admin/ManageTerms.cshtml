@@ -7,33 +7,121 @@
 {
     <div class="alert alert-success text-center">@TempData["SuccessMessage"]</div>
 }
-<h2>Dönem Yönetimi</h2>
 
-<p>
-    @Html.ActionLink("Yeni Dönem Ekle", "CreateOrEditTerm", null, new { @class = "btn btn-primary" })
-</p>
 
-<table class="table">
-    <tr>
-        <th>Adı</th>
-        <th>Durum</th>
-        <th>Seçim Başlangıç</th>
-        <th>Seçim Bitiş</th>
-        <th>İşlemler</th>
-    </tr>
-    @foreach (var term in Model)
-    {
-        <tr>
-            <td>@term.TermName</td>
-            <td>@(term.IsActive ? "Açık" : "Kapalı")</td>
-            <td>@(term.CourseSelectionStart?.ToString("dd.MM.yyyy"))</td>
-            <td>@(term.CourseSelectionEnd?.ToString("dd.MM.yyyy"))</td>
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card glass-card">
+            <div class="card-header text-white">
+                <h4 class="m-0">Dönem Ekle / Güncelle</h4>
+            </div>
+            <div class="card-body">
+                @using (Html.BeginForm("CreateOrUpdateTerm", "Admin", FormMethod.Post))
+                {
+                    @Html.Hidden("TermId", null, new { id = "TermId" })
 
-            <td>
-                @Html.ActionLink("Güncelle", "CreateOrEditTerm", new { id = term.TermId }, new { @class = "btn btn-sm btn-warning" })
-                @Html.ActionLink("Sil", "DeleteTerm", new { id = term.TermId }, new { @class = "btn btn-sm btn-danger", onclick = "return confirm('Silmek istediğinize emin misiniz?');" })
-            </td>
-        </tr>
-    }
-</table>
+                    <div class="row">
+                        <div class="form-group col-md-4 mb-3">
+                            @Html.Label("TermName", "Dönem Adı", new { @class = "form-label" })
+                            @Html.TextBox("TermName", null, new { @class = "form-control", id = "TermName", placeholder = "Örn: Güz 2025", required = "required" })
+                        </div>
+                        <div class="form-group col-md-3 mb-3">
+                            @Html.Label("CourseSelectionStart", "Seçim Başlangıç", new { @class = "form-label" })
+                            @Html.TextBox("CourseSelectionStart", null, new { @class = "form-control", id = "CourseSelectionStart", type = "date", required = "required" })
+                        </div>
+                        <div class="form-group col-md-3 mb-3">
+                            @Html.Label("CourseSelectionEnd", "Seçim Bitiş", new { @class = "form-label" })
+                            @Html.TextBox("CourseSelectionEnd", null, new { @class = "form-control", id = "CourseSelectionEnd", type = "date", required = "required" })
+                        </div>
+                        <div class="form-group col-md-2 mb-3 d-flex align-items-end">
+                            <div class="form-check">
+                                <label class="form-check-label">
+                                    @Html.CheckBox("IsActive", false, new { @class = "form-check-input", id = "IsActive" }) Aktif
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="text-end">
+                        <button type="submit" class="btn btn-success px-4" id="submitBtn">Ekle</button>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="col-12">
+    <div class="card glass-card">
+        <div class="card-header text-white">
+            <h2>Dönem Yönetimi</h2>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table id="viewTerms" class="display custom-datatable">
+                    <thead>
+                        <tr>
+                            <th>Adı</th>
+                            <th>Durum</th>
+                            <th>Seçim Başlangıç</th>
+                            <th>Seçim Bitiş</th>
+                            <th>İşlemler</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var term in Model)
+                        {
+                            <tr>
+                                <td>@term.TermName</td>
+                                <td>@(term.IsActive ? "Açık" : "Kapalı")</td>
+                                <td>@(term.CourseSelectionStart?.ToString("dd-MM-yyyy"))</td>
+                                <td>@(term.CourseSelectionEnd?.ToString("dd-MM-yyyy"))</td>
+                                <td>
+                                    <button type="button" class="btn btn-sm editTermBtn"
+                                            data-id="@term.TermId"
+                                            data-name="@term.TermName"
+                                            data-start="@(term.CourseSelectionStart?.ToString("dd-MM-yyyy"))"
+                                            data-end="@(term.CourseSelectionEnd?.ToString("dd-MM-yyyy"))"
+                                            data-active="@term.IsActive.ToString().ToLower()">
+                                        Güncelle
+                                    </button>
+                                    @Html.ActionLink("Sil", "DeleteTerm", new { id = term.TermId }, new { @class = "btn btn-danger btn-sm", onclick = "return confirm('Silmek istediğinize emin misiniz?');" })
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            $('#viewTerms').DataTable({
+                paging: true,
+                searching: true,
+                ordering: true,
+                language: {
+                    url: '//cdn.datatables.net/plug-ins/2.3.2/i18n/tr.json',
+                },
+            });
+        });
+    </script>
+    <script>
+        $(document).ready(function () {
+            $('#viewTerms').DataTable();
+
+            $('.editTermBtn').click(function () {
+                $('#TermId').val($(this).data('id'));
+                $('#TermName').val($(this).data('name'));
+                $('#CourseSelectionStart').val($(this).data('start'));
+                $('#CourseSelectionEnd').val($(this).data('end'));
+                $('#IsActive').prop('checked', $(this).data('active') === "true");
+
+                $('#submitBtn').text("Güncellemeyi Onayla").removeClass('btn-success').addClass('btn-warning');
+            });
+        });
+    </script>
+}
 

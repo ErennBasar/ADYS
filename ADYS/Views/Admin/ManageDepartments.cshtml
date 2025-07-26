@@ -3,29 +3,126 @@
     ViewBag.Title = "Bölüm Tanımlamaları";
 }
 
-<h2>Bölüm Tanımlamaları</h2>
 
-<p>
-    @Html.ActionLink("Yeni Bölüm Ekle", "CreateDepartment", "Admin", null, new { @class = "btn btn-success mb-3" })
-</p>
+<div class="row">
 
-<table class="table table-bordered table-striped">
-    <thead>
-        <tr>
-            <th>Bölüm Adı</th>
-            <th>İşlemler</th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var department in Model)
-        {
-            <tr>
-                <td>@department.DepartmentName</td>
-                <td>
-                    @Html.ActionLink("Düzenle", "CreateDepartment", "Admin", new { id = department.DepartmentId }, new { @class = "btn btn-sm btn-warning" })
-                    @Html.ActionLink("Sil", "DeleteDepartment", "Admin", new { id = department.DepartmentId }, new { @class = "btn btn-sm btn-danger", onclick = "return confirm('Silmek istediğinize emin misiniz?');" })
-                </td>
-            </tr>
-        }
-    </tbody>
-</table>
+    <div class="col-md-6 mb-4">
+        <div class="card glass-card h-100">
+            <div class="card-header text-white">
+                Yeni Bölüm Ekle
+            </div>
+            <div class="card-body d-flex flex-column justify-content-between">
+                @using (Html.BeginForm("CreateDepartmentInline", "Admin", FormMethod.Post))
+                {
+                    <div>
+                        <div class="mb-3">
+                            @Html.Label("DepartmentName", "Bölüm Adı", new { @class = "form-label" })
+                            @Html.TextBox("DepartmentName", null, new { @class = "form-control", required = "required", placeholder = "Örn: Bilgisayar Mühendisliği" })
+                        </div>
+                    </div>
+                    <div class="text-start mt-auto pt-4">
+                        <button type="submit" class="btn btn-success">Ekle</button>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+
+
+    <div class="col-md-6 mb-4">
+        <div class="card glass-card h-100">
+            <div class="card-header text-white">
+                Bölüm Güncelle
+            </div>
+            <div class="card-body">
+                @using (Html.BeginForm("UpdateDepartmentInline", "Admin", FormMethod.Post))
+                {
+                    <div class="mb-3">
+                        @Html.Label("SelectedDepartmentId", "Güncellenecek Bölüm", new { @class = "form-label" })
+                        @Html.DropDownList("SelectedDepartmentId", new SelectList(ViewBag.Departments as List<ADYS.Models.Department>, "DepartmentId", "DepartmentName"), "Seçiniz", new { @class = "form-select", required = "required", @id = "departmentDropdown" })
+                    </div>
+
+                    <div class="mb-3">
+                        @Html.Label("NewDepartmentName", "Yeni Bölüm Adı", new { @class = "form-label" })
+                        @Html.TextBox("NewDepartmentName", null, new { @class = "form-control", required = "required", placeholder = "Yeni ad giriniz", @id = "newDepartmentName" })
+                    </div>
+
+                    <div class="text-end">
+                        <button type="submit" class="btn btn-warning">Güncelle</button>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+<div class="col-12">
+    <div class="card glass-card ">
+        <div class="card-header text-white">
+            <h2>Bölüm Tanımlamaları</h2>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table id="viewDepartments" class="display custom-datatable">
+                    <thead>
+                        <tr>
+                            <th>Bölüm Adı</th>
+                            <th>İşlemler</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var department in Model)
+                        {
+                            <tr>
+                                <td>@department.DepartmentName</td>
+                                <td>
+                                    @Html.ActionLink("Düzenle", "CreateDepartment", "Admin", new { id = department.DepartmentId }, new { @class = "btn btn-sm btn-warning" })
+                                    @Html.ActionLink("Sil", "DeleteDepartment", "Admin", new { id = department.DepartmentId }, new { @class = "btn btn-sm btn-danger", onclick = "return confirm('Silmek istediğinize emin misiniz?');" })
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            $('#viewDepartments').DataTable({
+                paging: true,
+                searching: true,
+                ordering: true,
+            });
+        });
+    </script>
+    <script>
+    $(document).ready(function () {
+        $("#departmentDropdown").change(function () {
+            var departmentId = $(this).val();
+
+            if (departmentId) {
+                $.ajax({
+                    url: '@Url.Action("GetDepartmentName", "Admin")',
+                    type: 'GET',
+                    data: { id: departmentId },
+                    success: function (response) {
+                        if (response.success) {
+                            $("#newDepartmentName").val(response.name);
+                        } else {
+                            $("#newDepartmentName").val("");
+                        }
+                    }
+                });
+            } else {
+                $("#newDepartmentName").val("");
+            }
+        });
+    });
+    </script>
+}

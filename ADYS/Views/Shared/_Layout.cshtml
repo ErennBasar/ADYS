@@ -3,6 +3,8 @@
 @{
     int studentId = Session["StudentId"] != null ? (int)Session["StudentId"] : 0;
     var advisorId = Session["AdvisorID"];
+    string currentController = ViewContext.RouteData.Values["controller"].ToString();
+    string currentAction = ViewContext.RouteData.Values["action"].ToString();
 }
 
 <!DOCTYPE html>
@@ -32,42 +34,46 @@
     @RenderSection("Styles", required: false)
 </head>
 <body>
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark shadow-sm">
-        <div class="container">
-            @Html.ActionLink(ConfigurationManager.AppSettings["AppName"] ?? "ADYS", "GeneralLogin", "Login", new { area = "" }, new { @class = "navbar-brand" })
-            <button type="button" class="navbar-toggler" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" title="Toggle navigation" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse">
-                <ul class="navbar-nav me-auto">
-                    @if (Session["UserRole"] != null && Session["UserRole"].ToString() == "Admin")
-                    {
-                        <li class="nav-item">@Html.ActionLink("Kontrol Paneli", "Dashboard", "Admin", null, new { @class = "nav-link text-white" })</li>
-                        <li class="nav-item">@Html.ActionLink("Öğrenciler", "ManageStudents", "Admin", null, new { @class = "nav-link text-white" })</li>
-                        <li class="nav-item">@Html.ActionLink("Danışmanlar", "ManageAdvisors", "Admin", null, new { @class = "nav-link text-white" })</li>
-                        <li class="nav-item">@Html.ActionLink("Dersler", "ManageCourses", "Admin", null, new { @class = "nav-link text-white" })</li>
-                        <li class="nav-item">@Html.ActionLink("Bölümler", "ManageDepartments", "Admin", null, new { @class = "nav-link text-white" })</li>
-                        <li class="nav-item">@Html.ActionLink("Dönem", "ManageTerms", "Admin", null, new { @class = "nav-link text-white" })</li>
-                    }
-                    else if (Session["UserRole"] != null && Session["UserRole"].ToString() == "Advisor")
-                    {
-                        <li class="nav-item">@Html.ActionLink("Danışman Paneli", "Dashboard", "Advisor", new { advisorId = advisorId }, new { @class = "nav-link text-white" })</li>
-                        <li class="nav-item">@Html.ActionLink("Ders Seçimi Yapanlar", "Students", "Advisor", new { advisorId = advisorId }, new { @class = "nav-link text-white" })</li>
-                    }
-                    else if (Session["UserRole"] != null && Session["UserRole"].ToString() == "Student")
-                    {
-                        <li class="nav-item">@Html.ActionLink("Bilgilerim", "Dashboard", "Student", new { studentId = studentId }, new { @class = "nav-link text-white" })</li>
-                        <li class="nav-item">@Html.ActionLink("Ders Seç", "SelectCourses", "Student", null, new { @class = "nav-link text-white" })</li>
-                    }
 
-                    @if (Session["UserRole"] != null)
-                    {
-                        <li class="nav-item">@Html.ActionLink("Çıkış", "Logout", "Login", null, new { @class = "nav-link text-warning" })</li>
-                    }
-                </ul>
+    @if (!(currentController == "Login" && currentAction == "GeneralLogin"))
+    {
+        <nav class="navbar navbar-expand-lg navbar-dark bg-dark shadow-sm">
+            <div class="container">
+                @Html.ActionLink(ConfigurationManager.AppSettings["AppName"] ?? "ADYS", "GeneralLogin", "Login", new { area = "" }, new { @class = "navbar-brand" })
+                <button type="button" class="navbar-toggler" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" title="Toggle navigation" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse">
+                    <ul class="navbar-nav me-auto">
+                        @if (Session["UserRole"] != null && Session["UserRole"].ToString() == "Admin")
+                        {
+                            <li class="nav-item">@Html.ActionLink("Kontrol Paneli", "Dashboard", "Admin", null, new { @class = "nav-link text-white" })</li>
+                            <li class="nav-item">@Html.ActionLink("Öğrenciler", "ManageStudents", "Admin", null, new { @class = "nav-link text-white" })</li>
+                            <li class="nav-item">@Html.ActionLink("Danışmanlar", "ManageAdvisors", "Admin", null, new { @class = "nav-link text-white" })</li>
+                            <li class="nav-item">@Html.ActionLink("Dersler", "ManageCourses", "Admin", null, new { @class = "nav-link text-white" })</li>
+                            <li class="nav-item">@Html.ActionLink("Bölümler", "ManageDepartments", "Admin", null, new { @class = "nav-link text-white" })</li>
+                            <li class="nav-item">@Html.ActionLink("Dönem", "ManageTerms", "Admin", null, new { @class = "nav-link text-white" })</li>
+                        }
+                        else if (Session["UserRole"] != null && Session["UserRole"].ToString() == "Advisor")
+                        {
+                            <li class="nav-item">@Html.ActionLink("Danışman Paneli", "Dashboard", "Advisor", new { advisorId = advisorId }, new { @class = "nav-link text-white" })</li>
+                            <li class="nav-item">@Html.ActionLink("Ders Seçimi Yapanlar", "Students", "Advisor", new { advisorId = advisorId }, new { @class = "nav-link text-white" })</li>
+                        }
+                        else if (Session["UserRole"] != null && Session["UserRole"].ToString() == "Student")
+                        {
+                            <li class="nav-item">@Html.ActionLink("Bilgilerim", "Dashboard", "Student", new { studentId = studentId }, new { @class = "nav-link text-white" })</li>
+                            <li class="nav-item">@Html.ActionLink("Ders Seç", "SelectCourses", "Student", null, new { @class = "nav-link text-white" })</li>
+                        }
+
+                        @if (Session["UserRole"] != null)
+                        {
+                            <li class="nav-item">@Html.ActionLink("Çıkış", "Logout", "Login", null, new { @class = "nav-link text-warning" })</li>
+                        }
+                    </ul>
+                </div>
             </div>
-        </div>
-    </nav>
+        </nav>
+     }
 
     <div class="container body-content">
         @RenderBody()

@@ -173,6 +173,10 @@
     <Compile Include="ViewModels\StudentDashboardViewModel.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Content\Backgrounds\DarkMountain.jpg" />
+    <Content Include="Content\Backgrounds\ForestSunset.jpg" />
+    <Content Include="Content\Backgrounds\newImage.jpg" />
+    <Content Include="Content\Backgrounds\WhiteMountain.jpg" />
     <Content Include="Content\bootstrap-grid.css" />
     <Content Include="Content\bootstrap-grid.min.css" />
     <Content Include="Content\bootstrap-grid.rtl.css" />
@@ -190,6 +194,7 @@
     <Content Include="Content\bootstrap.rtl.css" />
     <Content Include="Content\bootstrap.rtl.min.css" />
     <Content Include="Content\course-selection.css" />
+    <Content Include="Content\GlassCard.css" />
     <Content Include="Content\login.css" />
     <Content Include="Content\loginIndex.css" />
     <Content Include="favicon.ico" />

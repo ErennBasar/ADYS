@@ -4,35 +4,114 @@
     ViewBag.Title = "Ders Tanımlamaları";
 }
 
-<h2>Ders Tanımlamaları</h2>
+<div class="row">
+    <!-- Yeni Ders Ekleme Kartı -->
+    <div class="col-12 mb-4">
+        <div class="card glass-card">
+            <div class="card-header text-white">
+                <h4 class="m-0">Yeni Ders Ekle</h4>
+            </div>
+            <div class="card-body">
+                @using (Html.BeginForm("CreateCourseInline", "Admin", FormMethod.Post))
+                {
+                    <div class="row">
+                        <div class="form-group col-md-3 mb-3">
+                            @Html.Label("CourseName", "Ders Adı", new { @class = "form-label" })
+                            @Html.TextBox("CourseName", null, new { @class = "form-control", required = "required" })
+                        </div>
+                        <div class="form-group col-md-3 mb-3">
+                            @Html.Label("DayOfWeek", "Ders Günü", new { @class = "form-label" })
+                            @Html.TextBox("DayOfWeek", null, new { @class = "form-control", required = "required", placeholder = "Örn: Pazartesi" })
+                        </div>
 
-<p>
-    @Html.ActionLink("Yeni Ders Ekle", "CreateCourse", "Admin", null, new { @class = "btn btn-success" })
-</p>
+                        <div class="form-group col-md-2 mb-3">
+                            @Html.Label("StartTime", "Başlangıç Saati", new { @class = "form-label" })
+                            @Html.TextBox("StartTime", null, new { @class = "form-control", required = "required", type = "time" })
+                        </div>
+                        <div class="form-group col-md-2 mb-3">
+                            @Html.Label("EndTime", "Bitiş Saati", new { @class = "form-label" })
+                            @Html.TextBox("EndTime", null, new { @class = "form-control", required = "required", type = "time" })
+                        </div>
 
-<table class="table table-bordered table-striped">
-    <thead>
-        <tr>
-            <th>Ders Adı</th>
-            <th>AKTS</th>
-            <th>Dersi Veren</th>
-            <th>Bölüm</th>
-            <th>İşlemler</th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var course in Model)
-        {
-            <tr>
-                <td>@course.CourseName</td>
-                <td>@course.AKTS</td>
-                <td>@(course.Advisor != null ? course.Advisor.FullName : "Danışman yok")</td>
-                <td>@(course.Department != null ? course.Department.DepartmentName : "Bölüm yok")</td>
-                <td>
-                    @Html.ActionLink("Güncelle", "EditCourse", new { id = course.CourseId }, new { @class = "btn btn-warning btn-sm" })
-                    @Html.ActionLink("Sil", "DeleteCourse", new { id = course.CourseId }, new { @class = "btn btn-danger btn-sm", onclick = "return confirm('Silmek istediğinize emin misiniz?');" })
-                </td>
-            </tr>
-        }
-    </tbody>
-</table>
+                        <div class="form-group col-md-2 mb-3">
+                            @Html.Label("AKTS", "AKTS", new { @class = "form-label" })
+                            @Html.TextBox("AKTS", null, new { @class = "form-control", required = "required", type = "number", min = "1" })
+                        </div>
+
+                        <div class="form-group col-md-2 mb-3">
+                            @Html.Label("Kontenjan", "Kontenjan", new { @class = "form-label" })
+                            @Html.TextBox("Kontenjan", null, new { @class = "form-control", required = "required", type = "number", min = "1" })
+                        </div>
+
+                        <div class="form-group col-md-3 mb-3">
+                            @Html.Label("AdvisorId", "Danışman", new { @class = "form-label" })
+                            @Html.DropDownList("AdvisorId", ViewBag.Advisors as SelectList, "Seçiniz", new { @class = "form-select", required = "required" })
+                        </div>
+
+                        <div class="form-group col-md-3 mb-3">
+                            @Html.Label("DepartmentId", "Bölüm", new { @class = "form-label" })
+                            @Html.DropDownList("DepartmentId", (SelectList)ViewBag.Departments, "Seçiniz", new { @class = "form-select", required = "required" })
+                        </div>
+
+                        <div class="form-group col-md-1 mb-3 d-flex align-items-end">
+                            <button type="submit" class="btn btn-success w-100">Ekle</button>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+    <div class="col-12">
+        <div class="card glass-card">
+            <div class="card-header text-white">
+                <h2>Ders Tanımlamaları</h2>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table id="viewCourses" class="display custom-datatable">
+                        <thead>
+                            <tr>
+                                <th>Ders Adı</th>
+                                <th>AKTS</th>
+                                <th>Dersi Veren</th>
+                                <th>Bölüm</th>
+                                <th>İşlemler</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var course in Model)
+                            {
+                                <tr>
+                                    <td>@course.CourseName</td>
+                                    <td>@course.AKTS</td>
+                                    <td>@(course.Advisor != null ? course.Advisor.UserName : "Danışman yok")</td>
+                                    <td>@(course.Department != null ? course.Department.DepartmentName : "Bölüm yok")</td>
+                                    <td>
+                                        @Html.ActionLink("Güncelle", "EditCourse", new { id = course.CourseId }, new { @class = "btn btn-warning btn-sm" })
+                                        @Html.ActionLink("Sil", "DeleteCourse", new { id = course.CourseId }, new { @class = "btn btn-danger btn-sm", onclick = "return confirm('Silmek istediğinize emin misiniz?');" })
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    @section Scripts {
+        <script>
+            $(document).ready(function () {
+                $('#viewCourses').DataTable({
+                    paging: true,
+                    searching: true,
+                    ordering: true,
+                    language: {
+                        url: '//cdn.datatables.net/plug-ins/2.3.2/i18n/tr.json',
+                    },
+                });
+            });
+        </script>
+    }

@@ -5,42 +5,56 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<h2>Genel Kontrol Erkanı</h2>
 
-<table id="studentsDashboard" class="display">
-    <thead>
-        <tr>
-            <th>Öğrenci Adı</th>
-            <th>Email</th>
-            <th>Danışman</th>
-            <th>Danışman Email</th>
-            <th>İşlem</th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var student in Model)
-        {
-            <tr>
-                <td>@student.StudentName </td>
-                <td>@student.StudentEmail  </td>
-                <td>@student.AdvisorName </td>
-                <td>@student.AdvisorEmail </td>
-                <td>
-                    @Html.ActionLink("Dersleri İncele", "Review", "Admin", null, new { @class = "btn btn-sm" })
-                </td>
-            </tr>
-        }
-    </tbody>
-</table>
+
+<div class="col-12">
+    <div class="card glass-card ">
+        <div class="card-header text-white">
+            <h2>Genel Kontrol Ekranı</h2>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table id="adminDashboard" class="display custom-datatable">
+                    <thead>
+                        <tr>
+                            <th>Öğrenci Adı</th>
+                            <th>Email</th>
+                            <th>Danışman</th>
+                            <th>Danışman Email</th>
+                            <th>İşlem</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var student in Model)
+                        {
+                            <tr>
+                                <td>@student.StudentName </td>
+                                <td>@student.StudentEmail  </td>
+                                <td>@student.AdvisorName </td>
+                                <td>@student.AdvisorEmail </td>
+                                <td>
+                                    @Html.ActionLink("Dersleri İncele", "Review", "Admin", new {studentId = student.StudentId}, new { @class = "btn btn-sm" })
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
 @section scripts{
-    
+
     <script>
 
         $(document).ready(function () {
-            $('#studentsDashboard').DataTable({
+            $('#adminDashboard').DataTable({
                 paging: true,
                 searching: true,
                 ordering: true,
+                language: {
+                    url: '//cdn.datatables.net/plug-ins/2.3.2/i18n/tr.json',
+                },
             })
         });
     </script>
