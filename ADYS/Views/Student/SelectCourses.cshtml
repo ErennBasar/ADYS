@@ -105,8 +105,8 @@
                     errorDiv.remove();
                 }
             }
-        }
-
+        }        
+             
         $(document).ready(function () {
             $(".aktsCheckbox").change(calculateAkts);
             calculateAkts(); // Sayfa yüklenince kontrol et
@@ -126,7 +126,9 @@
                 searching: true,
                 ordering: true,
             });
+
             // Kontenjan kontrolü
+
             $(".aktsCheckbox").change(function () {
                 var courseId = $(this).closest("tr").find("input[name$='.CourseId']").val();
 
@@ -137,12 +139,13 @@
                     success: function (result) {
                         if (result.isFull) {
                             alert("Bu dersin kontenjanı dolmuştur.");
-                            // ✅ Geri kapat
+                            // Geri kapat
                             $(this).prop("checked", false);
                         }
                     }.bind(this)
                 });
-            });
+            });         
+
         });
     </script>
     <script>

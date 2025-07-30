@@ -4,58 +4,116 @@
     ViewBag.Title = "Ders Tanımlamaları";
 }
 
-<div class="row">
-    <!-- Yeni Ders Ekleme Kartı -->
-    <div class="col-12 mb-4">
-        <div class="card glass-card">
-            <div class="card-header text-white">
-                <h4 class="m-0">Yeni Ders Ekle</h4>
+<button class="btn btn-primary mb-3" id="openAddModal">Yeni Ders Ekle</button>
+
+<div class="col-12">
+    <div class="card glass-card">
+        <div class="card-header text-white">
+            <h2>Ders Tanımlamaları</h2>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table id="viewCourses" class="display custom-datatable">
+                    <thead>
+                        <tr>
+                            <th>Ders Adı</th>
+                            <th>AKTS</th>
+                            <th>Dersi Veren</th>
+                            <th>Bölüm</th>
+                            <th>İşlemler</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var course in Model)
+                        {
+                            <tr>
+                                <td>@course.CourseName</td>
+                                <td>@course.AKTS</td>
+                                <td>@(course.Advisor != null ? course.Advisor.UserName : "Danışman yok")</td>
+                                <td>@(course.Department != null ? course.Department.DepartmentName : "Bölüm yok")</td>
+                                <td>
+                                    <button type="button"
+                                            class="btn btn-sm btn-warning editCourseBtn"
+                                            data-id="@course.CourseId"
+                                            data-name="@course.CourseName"
+                                            data-day="@course.DayOfWeek"
+                                            data-start="@course.StartTime"
+                                            data-end="@course.EndTime"
+                                            data-akts="@course.AKTS"
+                                            data-kontenjan="@course.Kontenjan"
+                                            data-advisor="@course.AdvisorId"
+                                            data-department="@course.DepartmentId">
+                                        Güncelle
+                                    </button>
+
+                                    @*@Html.ActionLink("Sil", "DeleteCourse", new { id = course.CourseId }, new*@
+                                    <button type="button"
+                                            class="btn btn-danger btn-sm delete-course-btn"
+                                            data-id="@course.CourseId">
+                                        Sil
+                                    </button>
+
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
             </div>
-            <div class="card-body">
-                @using (Html.BeginForm("CreateCourseInline", "Admin", FormMethod.Post))
+        </div>
+    </div>
+</div>
+
+<!-- Ders Ekle / Güncelle Modal -->
+<div class="modal fade" id="courseModal" tabindex="-1" aria-labelledby="courseModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content ">
+            <div class="modal-header">
+                <h5 class="modal-title text-black" id="courseModalLabel">Ders Ekle / Güncelle</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Kapat"></button>
+            </div>
+            <div class="modal-body text-dark">
+                @using (Html.BeginForm("CreateOrUpdateCourse", "Admin", FormMethod.Post, new { id = "courseForm" }))
                 {
+                    @Html.Hidden("CourseId", null, new { id = "CourseId" })
+
                     <div class="row">
                         <div class="form-group col-md-3 mb-3">
-                            @Html.Label("CourseName", "Ders Adı", new { @class = "form-label" })
-                            @Html.TextBox("CourseName", null, new { @class = "form-control", required = "required" })
+                            @Html.Label("CourseName", "Ders Adı", new { @class = "form-label " })
+                            @Html.TextBox("CourseName", null, new { @class = "form-control", required = "required", id = "CourseName" })
                         </div>
                         <div class="form-group col-md-3 mb-3">
-                            @Html.Label("DayOfWeek", "Ders Günü", new { @class = "form-label" })
-                            @Html.TextBox("DayOfWeek", null, new { @class = "form-control", required = "required", placeholder = "Örn: Pazartesi" })
-                        </div>
-
-                        <div class="form-group col-md-2 mb-3">
-                            @Html.Label("StartTime", "Başlangıç Saati", new { @class = "form-label" })
-                            @Html.TextBox("StartTime", null, new { @class = "form-control", required = "required", type = "time" })
+                            @Html.Label("DayOfWeek", "Ders Günü", new { @class = "form-label " })
+                            @Html.TextBox("DayOfWeek", null, new { @class = "form-control", required = "required", placeholder = "Örn: Pazartesi", id = "DayOfWeek" })
                         </div>
                         <div class="form-group col-md-2 mb-3">
-                            @Html.Label("EndTime", "Bitiş Saati", new { @class = "form-label" })
-                            @Html.TextBox("EndTime", null, new { @class = "form-control", required = "required", type = "time" })
+                            @Html.Label("StartTime", "Başlangıç", new { @class = "form-label " })
+                            @Html.TextBox("StartTime", null, new { @class = "form-control", type = "time", required = "required", id = "StartTime" })
                         </div>
-
                         <div class="form-group col-md-2 mb-3">
-                            @Html.Label("AKTS", "AKTS", new { @class = "form-label" })
-                            @Html.TextBox("AKTS", null, new { @class = "form-control", required = "required", type = "number", min = "1" })
+                            @Html.Label("EndTime", "Bitiş", new { @class = "form-label " })
+                            @Html.TextBox("EndTime", null, new { @class = "form-control", type = "time", required = "required", id = "EndTime" })
                         </div>
-
                         <div class="form-group col-md-2 mb-3">
-                            @Html.Label("Kontenjan", "Kontenjan", new { @class = "form-label" })
-                            @Html.TextBox("Kontenjan", null, new { @class = "form-control", required = "required", type = "number", min = "1" })
+                            @Html.Label("AKTS", "AKTS", new { @class = "form-label " })
+                            @Html.TextBox("AKTS", null, new { @class = "form-control", type = "number", required = "required", id = "AKTS" })
                         </div>
+                        <div class="form-group col-md-2 mb-3">
+                            @Html.Label("Kontenjan", "Kontenjan", new { @class = "form-label " })
+                            @Html.TextBox("Kontenjan", null, new { @class = "form-control", type = "number", required = "required", id = "Kontenjan" })
+                        </div>
+                        <div class="form-group col-md-4 mb-3">
+                            @Html.Label("AdvisorId", "Danışman", new { @class = "form-label " })
+                            @Html.DropDownList("AdvisorId", ViewBag.Advisors as SelectList, "Seçiniz", new { @class = "form-select", required = "required", id = "AdvisorId" })
+                        </div>
+                        <div class="form-group col-md-4 mb-3">
+                            @Html.Label("DepartmentId", "Bölüm", new { @class = "form-label " })
+                            @Html.DropDownList("DepartmentId", ViewBag.Departments as SelectList, "Seçiniz", new { @class = "form-select", required = "required", id = "DepartmentId" })
+                        </div>
+                    </div>
 
-                        <div class="form-group col-md-3 mb-3">
-                            @Html.Label("AdvisorId", "Danışman", new { @class = "form-label" })
-                            @Html.DropDownList("AdvisorId", ViewBag.Advisors as SelectList, "Seçiniz", new { @class = "form-select", required = "required" })
-                        </div>
-
-                        <div class="form-group col-md-3 mb-3">
-                            @Html.Label("DepartmentId", "Bölüm", new { @class = "form-label" })
-                            @Html.DropDownList("DepartmentId", (SelectList)ViewBag.Departments, "Seçiniz", new { @class = "form-select", required = "required" })
-                        </div>
-
-                        <div class="form-group col-md-1 mb-3 d-flex align-items-end">
-                            <button type="submit" class="btn btn-success w-100">Ekle</button>
-                        </div>
+                    <div class="text-end">
+                        <button type="submit" class="btn btn-success px-4" id="courseSubmitBtn">Kaydet</button>
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Kapat</button>
                     </div>
                 }
             </div>
@@ -63,55 +121,85 @@
     </div>
 </div>
 
-    <div class="col-12">
-        <div class="card glass-card">
-            <div class="card-header text-white">
-                <h2>Ders Tanımlamaları</h2>
-            </div>
-            <div class="card-body">
-                <div class="table-responsive">
-                    <table id="viewCourses" class="display custom-datatable">
-                        <thead>
-                            <tr>
-                                <th>Ders Adı</th>
-                                <th>AKTS</th>
-                                <th>Dersi Veren</th>
-                                <th>Bölüm</th>
-                                <th>İşlemler</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach (var course in Model)
-                            {
-                                <tr>
-                                    <td>@course.CourseName</td>
-                                    <td>@course.AKTS</td>
-                                    <td>@(course.Advisor != null ? course.Advisor.UserName : "Danışman yok")</td>
-                                    <td>@(course.Department != null ? course.Department.DepartmentName : "Bölüm yok")</td>
-                                    <td>
-                                        @Html.ActionLink("Güncelle", "EditCourse", new { id = course.CourseId }, new { @class = "btn btn-warning btn-sm" })
-                                        @Html.ActionLink("Sil", "DeleteCourse", new { id = course.CourseId }, new { @class = "btn btn-danger btn-sm", onclick = "return confirm('Silmek istediğinize emin misiniz?');" })
-                                    </td>
-                                </tr>
-                            }
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
-    </div>
 
-    @section Scripts {
-        <script>
-            $(document).ready(function () {
-                $('#viewCourses').DataTable({
-                    paging: true,
-                    searching: true,
-                    ordering: true,
-                    language: {
-                        url: '//cdn.datatables.net/plug-ins/2.3.2/i18n/tr.json',
-                    },
-                });
+
+@section Scripts {
+
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <script>
+        $(document).ready(function () {
+            $('#viewCourses').DataTable({
+                paging: true,
+                searching: true,
+                ordering: true,
+                language: {
+                    "url": "/Scripts/i18n/tr.json"
+                }
             });
-        </script>
-    }
+
+            // Yeni Ders Ekle butonu - modal aç + formu sıfırla
+            $('#openAddModal').click(function () {
+                
+                $('#courseModalLabel').text("Yeni Ders Ekle");
+                $('#courseSubmitBtn').text("Kaydet").removeClass('btn-warning').addClass('btn-success');
+                $('#courseModal').modal('show');
+            });
+
+            // Güncelle butonu - formu doldur
+            $('.editCourseBtn').click(function () {
+                $('#CourseId').val($(this).data('id'));
+                $('#CourseName').val($(this).data('name'));
+                $('#DayOfWeek').val($(this).data('day'));
+                $('#StartTime').val($(this).data('start'));
+                $('#EndTime').val($(this).data('end'));
+                $('#AKTS').val($(this).data('akts'));
+                $('#Kontenjan').val($(this).data('kontenjan'));
+                $('#AdvisorId').val($(this).data('advisor'));
+                $('#DepartmentId').val($(this).data('department'));
+
+                $('#courseModalLabel').text("Ders Güncelle");
+                $('#courseSubmitBtn').text("Güncelle").removeClass('btn-success').addClass('btn-warning');
+                $('#courseModal').modal('show');
+            });
+        
+        });
+     
+    </script>
+    <script>
+            $(document).on('click', '.delete-course-btn', function () {
+            var courseId = $(this).data('id');
+
+            Swal.fire({
+                title: 'Emin misiniz?',
+                text: "Bu dersi silmek istediğinize emin misiniz?",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#3085d6',
+                confirmButtonText: 'Evet, sil!',
+                cancelButtonText: 'Vazgeç'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    $.ajax({
+                        url: '@Url.Action("DeleteCourse", "Admin")',
+                        type: 'POST',
+                        data: { id: courseId },
+                        success: function (response) {
+                            if (response.success) {
+                                Swal.fire('Silindi!', response.message, 'success').then(() => {
+                                    location.reload(); // sayfayı yenile
+                                });
+                            } else {
+                                Swal.fire('Hata!', response.message, 'error');
+                            }
+                        },
+                        error: function () {
+                            Swal.fire('Hata!', 'Silme işlemi sırasında bir hata oluştu.', 'error');
+                        }
+                    });
+                }
+            });
+        });
+    </script>
+}

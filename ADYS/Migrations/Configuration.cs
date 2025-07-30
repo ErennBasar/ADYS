@@ -36,17 +36,22 @@
             {
                 var adminUser_2 = new User
                 {
-                    UserName = "admin2",
-                    Email = "admin2@uni.edu.tr",
-                    Password = "123"
+                    UserName = "admin",
+                    Email = "admin@uni.edu.tr",
+                    Password = "123",
+                    IsActive = true,
+                    CreateDate = DateTime.Now,
+
                 };
                 var advisor_2 = new User
                 {
-                    UserName = "Advisor2",
-                    Email = "advisor2@uni.edu.tr",
-                    Password = "123"
+                    UserName = "Advisor",
+                    Email = "advisor@uni.edu.tr",
+                    Password = "123",
+                    IsActive = true,
+                    CreateDate = DateTime.Now,
                 };
-                
+
                 context.Users.Add(advisor_2);
                 context.Users.Add(adminUser_2);
 
@@ -54,10 +59,12 @@
 
                 var student_2 = new User
                 {
-                    UserName = "Ogrenci2",
-                    Email = "ogrenci2@uni.edu.tr",
+                    UserName = "Ogrenci",
+                    Email = "ogrenci@uni.edu.tr",
                     Password = "123",
-                    AdvisorId = advisor_2.UserId
+                    IsActive = true,
+                    CreateDate = DateTime.Now,
+
                 };
 
                 context.Users.Add(student_2);
@@ -100,16 +107,16 @@
                 {
                     var courses = new List<Course>
                 {
-                    new Course { CourseName = "Yapay Zeka", AKTS = 6, AdvisorId = firstAdvisor.UserId, DepartmentId = firstDepartment.DepartmentId,DayOfWeek = "Monday",StartTime = new TimeSpan(9, 0, 0),EndTime = new TimeSpan(11, 0, 0) },
-                    new Course { CourseName = "Veri Tabanı Sistemleri", AKTS = 5, AdvisorId = firstAdvisor.UserId, DepartmentId = firstDepartment.DepartmentId,DayOfWeek = "Monday",StartTime = new TimeSpan(10, 0, 0),EndTime = new TimeSpan(12, 0, 0) },
-                    new Course { CourseName = "Web Programlama", AKTS = 6,AdvisorId = firstAdvisor.UserId, DepartmentId = firstDepartment.DepartmentId,DayOfWeek = "Tuesday",StartTime = new TimeSpan(13, 0, 0),EndTime = new TimeSpan(15, 0, 0) },
-                    new Course { CourseName = "Mobil Uygulama Geliştirme", AKTS = 6, AdvisorId = firstAdvisor.UserId, DepartmentId = firstDepartment.DepartmentId,DayOfWeek = "Friday",StartTime = new TimeSpan(14, 0, 0),EndTime = new TimeSpan(16, 0, 0) },
-                    new Course { CourseName = "Bilgisayar Ağları", AKTS = 5, AdvisorId = firstAdvisor.UserId, DepartmentId = firstDepartment.DepartmentId,DayOfWeek = "Wednesday",StartTime = new TimeSpan(12, 0, 0),EndTime = new TimeSpan(15, 0, 0) },
-                    new Course { CourseName = "İşletim Sistemleri", AKTS = 4, AdvisorId = firstAdvisor.UserId, DepartmentId = firstDepartment.DepartmentId,DayOfWeek = "Thursday",StartTime = new TimeSpan(8, 0, 0),EndTime = new TimeSpan(10, 0, 0) },
-                    new Course { CourseName = "Siber Güvenlik", AKTS = 3, AdvisorId = firstAdvisor.UserId, DepartmentId = firstDepartment.DepartmentId,DayOfWeek = "Friday",StartTime = new TimeSpan(9, 0, 0),EndTime = new TimeSpan(11, 0, 0) },
-                    new Course { CourseName = "Makine Öğrenmesi", AKTS = 5, AdvisorId = firstAdvisor.UserId, DepartmentId = firstDepartment.DepartmentId,DayOfWeek = "Tuesday",StartTime = new TimeSpan(9, 0, 0),EndTime = new TimeSpan(11, 0, 0) },
-                    new Course { CourseName = "İnsan Bilgisayar Etkileşimi", AKTS = 2, AdvisorId = firstAdvisor.UserId, DepartmentId = firstDepartment.DepartmentId,DayOfWeek = "Monday",StartTime = new TimeSpan(15, 0, 0),EndTime = new TimeSpan(17, 0, 0) },
-                    new Course { CourseName = "Nesneye Dayalı Programlama", AKTS = 4,AdvisorId = firstAdvisor.UserId, DepartmentId = firstDepartment.DepartmentId,DayOfWeek = "Tuesday",StartTime = new TimeSpan(11, 0, 0),EndTime = new TimeSpan(13, 0, 0) }
+                    new Course { CourseName = "Yapay Zeka", AKTS = 6, AdvisorId = firstAdvisor.UserId, DepartmentId = firstDepartment.DepartmentId,DayOfWeek = "Pazartesi",StartTime = new TimeSpan(9, 0, 0),EndTime = new TimeSpan(11, 0, 0) },
+                    new Course { CourseName = "Veri Tabanı Sistemleri", AKTS = 5, AdvisorId = firstAdvisor.UserId, DepartmentId = firstDepartment.DepartmentId,DayOfWeek = "Pazartesi",StartTime = new TimeSpan(10, 0, 0),EndTime = new TimeSpan(12, 0, 0) },
+                    new Course { CourseName = "Web Programlama", AKTS = 6,AdvisorId = firstAdvisor.UserId, DepartmentId = firstDepartment.DepartmentId,DayOfWeek = "Salı",StartTime = new TimeSpan(13, 0, 0),EndTime = new TimeSpan(15, 0, 0) },
+                    new Course { CourseName = "Mobil Uygulama Geliştirme", AKTS = 6, AdvisorId = firstAdvisor.UserId, DepartmentId = firstDepartment.DepartmentId,DayOfWeek = "Cuma",StartTime = new TimeSpan(14, 0, 0),EndTime = new TimeSpan(16, 0, 0) },
+                    new Course { CourseName = "Bilgisayar Ağları", AKTS = 5, AdvisorId = firstAdvisor.UserId, DepartmentId = firstDepartment.DepartmentId,DayOfWeek = "Çarşamba",StartTime = new TimeSpan(12, 0, 0),EndTime = new TimeSpan(15, 0, 0) },
+                    new Course { CourseName = "İşletim Sistemleri", AKTS = 4, AdvisorId = firstAdvisor.UserId, DepartmentId = firstDepartment.DepartmentId,DayOfWeek = "Perşembe",StartTime = new TimeSpan(8, 0, 0),EndTime = new TimeSpan(10, 0, 0) },
+                    new Course { CourseName = "Siber Güvenlik", AKTS = 3, AdvisorId = firstAdvisor.UserId, DepartmentId = firstDepartment.DepartmentId,DayOfWeek = "Cuma",StartTime = new TimeSpan(9, 0, 0),EndTime = new TimeSpan(11, 0, 0) },
+                    new Course { CourseName = "Makine Öğrenmesi", AKTS = 5, AdvisorId = firstAdvisor.UserId, DepartmentId = firstDepartment.DepartmentId,DayOfWeek = "Salı",StartTime = new TimeSpan(9, 0, 0),EndTime = new TimeSpan(11, 0, 0) },
+                    new Course { CourseName = "İnsan Bilgisayar Etkileşimi", AKTS = 2, AdvisorId = firstAdvisor.UserId, DepartmentId = firstDepartment.DepartmentId,DayOfWeek = "Pazartesi",StartTime = new TimeSpan(15, 0, 0),EndTime = new TimeSpan(17, 0, 0) },
+                    new Course { CourseName = "Nesneye Dayalı Programlama", AKTS = 4,AdvisorId = firstAdvisor.UserId, DepartmentId = firstDepartment.DepartmentId,DayOfWeek = "Salı",StartTime = new TimeSpan(11, 0, 0),EndTime = new TimeSpan(13, 0, 0) }
                 };
 
                     context.Courses.AddRange(courses);
@@ -161,3 +168,4 @@
         }
     }
 }
+

@@ -19,50 +19,73 @@ else
     <div class="alert alert-warning">⏳ Bazı dersler henüz onaylanmadı.</div>
 }
 
-<table class="table table-bordered table-hover">
-    <thead>
-        <tr>
-            <th>Ders Adı</th>
-            <th>AKTS</th>
-            <th>Durum</th>
-            <th>İşlem</th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var item in Model)
-        {
-            string rowClass = item.IsApproved == true ? "table-success"
-                             : item.IsApproved == false ? "table-danger"
-                             : "table-warning";
+<div class="col-12">
+    <div class="card glass-card">
+        <div class="card-header text-white">
+            <h2>Danışman Tanımlamaları</h2>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table id="reviewCourses" class="display custom-datatable">
+                    <thead>
+                        <tr>
+                            <th>Ders Adı</th>
+                            <th>AKTS</th>
+                            <th>Durum</th>
+                            <th>İşlem</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model)
+                        {
+                            string rowClass = item.IsApproved == true ? "table-success"
+                                             : item.IsApproved == false ? "table-danger"
+                                             : "table-warning";
 
-            <tr class="@rowClass" id="row-@item.CourseSelectionId">
-                <td>@item.CourseName</td>
-                <td>@item.AKTS</td>
-                <td>
-                    @if (item.IsApproved == true)
-                    {
-                        <span class="text-success">✔ Onaylandı</span>
-                    }
-                    else if (item.IsApproved == false)
-                    {
-                        <span class="text-danger">✖ Reddedildi</span>
-                    }
-                    else
-                    {
-                        <span class="text-muted">Bekliyor</span>
-                    }
-                </td>
-                <td>
-                    <button class="btn btn-success btn-sm approve-btn" data-id="@item.CourseSelectionId" data-approve="true">Onayla</button>
-                    <button class="btn btn-danger btn-sm approve-btn" data-id="@item.CourseSelectionId" data-approve="false">Reddet</button>
-                </td>
-            </tr>
-        }
-    </tbody>
-</table>
+                            <tr class="@rowClass" id="row-@item.CourseSelectionId">
+                                <td>@item.CourseName</td>
+                                <td>@item.AKTS</td>
+                                <td>
+                                    @if (item.IsApproved == true)
+                                    {
+                                        <span class="text-success">✔ Onaylandı</span>
+                                    }
+                                    else if (item.IsApproved == false)
+                                    {
+                                        <span class="text-danger">✖ Reddedildi</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="text-muted">Bekliyor</span>
+                                    }
+                                </td>
+                                <td>
+                                    <button class="btn btn-success btn-sm approve-btn" data-id="@item.CourseSelectionId" data-approve="true">Onayla</button>
+                                    <button class="btn btn-danger btn-sm approve-btn" data-id="@item.CourseSelectionId" data-approve="false">Reddet</button>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
 
 @section scripts {
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    @*<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>*@
+    <script>
+        $(document).ready(function () {
+            $('#reviewCourses').DataTable({
+                paging: true,
+                searching: true,
+                ordering: true,
+                language: {
+                    "url": "/Scripts/i18n/tr.json"
+                }
+            });
+        });
+    </script>
     <script>
         $(function () {
             $(".approve-btn").click(function () {

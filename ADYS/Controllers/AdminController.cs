@@ -8,6 +8,7 @@ using System.Data.Entity;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
+using ADYS.Helpers;
 
 namespace ADYS.Controllers
 {
@@ -69,58 +70,127 @@ namespace ADYS.Controllers
             return View(studentsWithAdvisor);
         }
 
+        //[HttpPost]
+        //public ActionResult AddStudent(string FullName, string Email, string Password, int AdvisorId)
+        //{
+        //    if (Session["UserRole"] == null || Session["UserRole"].ToString() != "Admin")
+        //    {
+        //        TempData["ErrorMessage"] = "Bu sayfaya erişmek için giriş yapmalısınız.";
+        //        return RedirectToAction("GeneralLogin", "Login");
+        //    }
+
+        //    var student = new User
+        //    {
+        //        UserName = FullName,
+        //        Email = Email,
+
+        //        Password = Password
+        //    };
+
+        //    db.Users.Add(student);
+        //    db.SaveChanges();
+
+        //    var studentRole = db.Roles.FirstOrDefault(r => r.RoleName == "Student");
+
+        //    if (studentRole != null)
+        //    {
+        //        db.UserRoles.Add(new UserRole
+        //        {
+        //            UserId = student.UserId,
+        //            RoleId = studentRole.RoleId
+        //        });
+        //    }
+
+        //    // AdvisorAssignments tablosuna eşleştirme 
+        //    db.AdvisorAssignments.Add(new AdvisorAssignment
+        //    {
+        //        StudentId = student.UserId,
+        //        AdvisorId = AdvisorId
+        //    });
+
+        //    db.SaveChanges();
+
+        //    return RedirectToAction("ManageStudents");
+
+        //}
         [HttpPost]
-        public ActionResult AddStudent(string FullName, string Email, string Password, int AdvisorId)
+        public ActionResult AddOrUpdateStudent(int? StudentId, string FullName, string Email, string Password, int AdvisorId)
         {
-            if (Session["UserRole"] == null || Session["UserRole"].ToString() != "Admin")
+            if (StudentId.HasValue)
             {
-                TempData["ErrorMessage"] = "Bu sayfaya erişmek için giriş yapmalısınız.";
-                return RedirectToAction("GeneralLogin", "Login");
-            }
-
-            var student = new User
-            {
-                UserName = FullName,
-                Email = Email,
-                Password = Password
-            };
-
-            db.Users.Add(student);
-            db.SaveChanges();
-
-            var studentRole = db.Roles.FirstOrDefault(r => r.RoleName == "Student");
-
-            if (studentRole != null)
-            {
-                db.UserRoles.Add(new UserRole
+                // GÜNCELLEME
+                var existing = db.Users.FirstOrDefault(x => x.UserId == StudentId.Value);
+                if (existing != null)
                 {
-                    UserId = student.UserId,
-                    RoleId = studentRole.RoleId
+                    existing.UserName = FullName;
+                    existing.Email = Email;
+
+                    if (!string.IsNullOrWhiteSpace(Password))
+                        existing.Password = Password;
+
+                    // UpdateDate güncelle
+                    existing.UpdateDate = DateTime.Now;
+
+                    // AdvisorId güncellemesi AdvisorAssignments tablosunda yapılmalı
+                    var assignment = db.AdvisorAssignments.FirstOrDefault(a => a.StudentId == existing.UserId);
+                    if (assignment != null)
+                    {
+                        assignment.AdvisorId = AdvisorId;
+                    }
+                    else
+                    {
+                        // Eğer öğrenciye ait eşleştirme yoksa yeni oluştur
+                        db.AdvisorAssignments.Add(new AdvisorAssignment
+                        {
+                            StudentId = existing.UserId,
+                            //AdvisorId = AdvisorId
+                        });
+                    }
+
+                    TempData["Success"] = "Öğrenci bilgileri güncellendi.";
+                }
+            }
+            else
+            {
+                // EKLEME
+                var student = new User
+                {
+                    UserName = FullName,
+                    Email = Email,
+                    Password = Password,
+                    CreateDate = DateTime.Now,    
+                    IsActive = true
+
+                };
+
+                db.Users.Add(student);
+                db.SaveChanges();
+
+                var studentRole = db.Roles.FirstOrDefault(r => r.RoleName == "Student");
+                if (studentRole != null)
+                {
+                    db.UserRoles.Add(new UserRole
+                    {
+                        UserId = student.UserId,
+                        RoleId = studentRole.RoleId
+                    });
+                }
+                // AdvisorAssignments tablosuna eşleştirme
+                db.AdvisorAssignments.Add(new AdvisorAssignment
+                {
+                    StudentId = student.UserId,
+                    AdvisorId = AdvisorId
                 });
+
+                db.SaveChanges();
+
+                TempData["Success"] = "Yeni öğrenci eklendi.";
             }
 
-            // AdvisorAssignments tablosuna eşleştirme 
-            db.AdvisorAssignments.Add(new AdvisorAssignment
-            {
-                StudentId = student.UserId,
-                AdvisorId = AdvisorId
-            });
-
-            db.SaveChanges();
-
-            return RedirectToAction("ManageStudents");
-
-            //if (ModelState.IsValid)
-            //{
-            //    db.Students.Add(student);
-            //    db.SaveChanges();
-            //    return RedirectToAction("ManageStudents");
-            //}
-
-            //ViewBag.Advisors = new SelectList(db.Advisors, "AdvisorId", "FullName");
-            //var students = db.Students.Include("Advisor").ToList();
-            //return View("ManageStudents", students);
+                db.SaveChanges();
+                return RedirectToAction("ManageStudents");
         }
+        
 
         public ActionResult DeleteStudent(int id)
         {
@@ -138,7 +208,10 @@ namespace ADYS.Controllers
                 db.AdvisorAssignments.RemoveRange(student.AdvisorAssignments);
                 db.UserRoles.RemoveRange(student.UserRoles);
 
-                db.Users.Remove(student);
+                student.IsDeleted = true;
+                student.IsActive = false;
+                student.DeleteDate = DateTime.Now;
+
                 db.SaveChanges();
             }
             return RedirectToAction("ManageStudents");
@@ -180,35 +253,112 @@ namespace ADYS.Controllers
         //        }
 
         //        // Ekle / Güncelle (POST)
+        //[HttpPost]
+        //public ActionResult CreateAdvisor(string FullName, string Email, string Password)
+        //{
+        //    var advisor = new User
+        //    {
+        //        UserName = FullName,
+        //        Email = Email,
+        //        Password = Password
+        //    };
+
+        //    db.Users.Add(advisor);
+        //    db.SaveChanges();
+
+        //    var advisorRole = db.Roles.FirstOrDefault(r => r.RoleName == "Advisor");
+
+        //    if (advisorRole != null)
+        //    {
+        //        db.UserRoles.Add(new UserRole
+        //        {
+        //            UserId = advisor.UserId,
+        //            RoleId = advisorRole.RoleId
+        //        });
+        //    }
+
+        //    db.SaveChanges();
+        //    TempData["SuccessMessage"] = "Danışman başarıyla eklendi.";
+
+        //    return RedirectToAction("ManageAdvisors");
+        //}
+
         [HttpPost]
-        public ActionResult CreateAdvisor(string FullName, string Email, string Password)
+        public ActionResult CreateOrUpdateAdvisor(int? AdvisorId, string UserName, string Email, string Password)
         {
-            var advisor = new User
+            if (AdvisorId.HasValue)
             {
-                UserName = FullName,
-                Email = Email,
-                Password = Password
-            };
-
-            db.Users.Add(advisor);
-            db.SaveChanges();
-
-            var advisorRole = db.Roles.FirstOrDefault(r => r.RoleName == "Advisor");
-
-            if (advisorRole != null)
-            {
-                db.UserRoles.Add(new UserRole
+                var existing = db.Users.FirstOrDefault(x => x.UserId == AdvisorId);
+                if (existing != null)
                 {
-                    UserId = advisor.UserId,
-                    RoleId = advisorRole.RoleId
-                });
+                    existing.UserName = UserName;
+                    existing.Email = Email;
+                    if (!string.IsNullOrWhiteSpace(Password))
+                        existing.Password = Password;
+                    TempData["Success"] = "Danışman güncellendi.";
+                }
             }
+            else
+            {
+                var advisor = new User
+                {
+                    UserName = UserName,
+                    Email = Email,
+                    Password = Password,
+                    CreateDate = DateTime.Now,
+                    IsActive = true
+                };
+                db.Users.Add(advisor);
+                db.SaveChanges();
 
+                var advisorRole = db.Roles.FirstOrDefault(r => r.RoleName == "Advisor");
+
+                if (advisorRole != null)
+                {
+                    db.UserRoles.Add(new UserRole
+                    {
+                        UserId = advisor.UserId,
+                        RoleId = advisorRole.RoleId
+                    });
+                    db.SaveChanges();
+                }
+
+                TempData["Success"] = "Yeni danışman eklendi.";
+            }
             db.SaveChanges();
-            TempData["SuccessMessage"] = "Danışman başarıyla eklendi.";
-
             return RedirectToAction("ManageAdvisors");
         }
+
+        [HttpPost]
+        public ActionResult DeleteAdvisor(int id)
+        {
+            var advisor = db.Users.FirstOrDefault(u => u.UserId == id);
+            if (advisor == null)
+            {
+                return Json(new
+                {
+                    success = false,
+                    message = "Danışman bulunamadı."
+                }, JsonRequestBehavior.AllowGet);
+            }
+
+            // Soft delete işlemleri
+            advisor.IsActive = false;
+            advisor.IsDeleted = true;
+            advisor.DeleteDate = DateTime.Now;
+
+            db.SaveChanges();
+
+            return Json(new
+            {
+                success = true,
+                message = "Danışman başarıyla pasif hale getirildi."
+            }, JsonRequestBehavior.AllowGet);
+        }
+
+
+
+
 
         //        // Silme işlemi
         //        public ActionResult DeleteAdvisor(int id)
@@ -264,7 +414,7 @@ namespace ADYS.Controllers
         //        .ToList();
 
         //    var departments = db.Departments;
-                
+
         //    ViewBag.Advisors = new SelectList(advisors, "UserId", "UserName");
         //    ViewBag.Departments = new SelectList(departments, "DepartmentId", "DepartmentName");
 
@@ -272,25 +422,68 @@ namespace ADYS.Controllers
         //}
 
         [HttpPost]
-        public ActionResult CreateCourseInline(string CourseName,string DayOfWeek,TimeSpan StartTime, TimeSpan EndTime , int AKTS,int Kontenjan, int AdvisorId, int DepartmentId)
+        public ActionResult CreateOrUpdateCourse(int? CourseId, string CourseName, string DayOfWeek, TimeSpan StartTime, TimeSpan EndTime, int AKTS, int Kontenjan, int AdvisorId, int DepartmentId)
         {
-            var course = new Course
+            Course course;
+
+            if (CourseId.HasValue && CourseId.Value > 0)
             {
-                CourseName = CourseName,
-                DayOfWeek = DayOfWeek,
-                StartTime = StartTime,
-                EndTime = EndTime,
-                AKTS = AKTS,
-                Kontenjan = Kontenjan,
-                AdvisorId = AdvisorId,
-                DepartmentId = DepartmentId
-            };
+                course = db.Courses.Find(CourseId.Value);
+                if (course == null)
+                {
+                    TempData["ErrorMessage"] = "Ders bulunamadı.";
+                    return RedirectToAction("ManageCourses");
+                }
 
-            db.Courses.Add(course);
+                // Güncelleme
+                course.CourseName = CourseName;
+                course.DayOfWeek = DayOfWeek;
+                course.StartTime = StartTime;
+                course.EndTime = EndTime;
+                course.AKTS = AKTS;
+                course.Kontenjan = Kontenjan;
+                course.AdvisorId = AdvisorId;
+                course.DepartmentId = DepartmentId;
+
+                TempData["SuccessMessage"] = "Ders başarıyla güncellendi.";
+            }
+            else
+            {
+                // Yeni ders ekleme
+                course = new Course
+                {
+                    CourseName = CourseName,
+                    DayOfWeek = DayOfWeek,
+                    StartTime = StartTime,
+                    EndTime = EndTime,
+                    AKTS = AKTS,
+                    Kontenjan = Kontenjan,
+                    AdvisorId = AdvisorId,
+                    DepartmentId = DepartmentId
+                };
+
+                db.Courses.Add(course);
+                TempData["SuccessMessage"] = "Yeni ders başarıyla eklendi.";
+            }
+
             db.SaveChanges();
-
             return RedirectToAction("ManageCourses");
         }
+
+        [HttpPost]
+        public JsonResult DeleteCourse(int id)
+        {
+            var course = db.Courses.Find(id);
+            if (course != null)
+            {
+                db.Courses.Remove(course);
+                db.SaveChanges();
+                return Json(new { success = true, message = "Ders başarıyla silindi." });
+            }
+            return Json(new { success = false, message = "Ders bulunamadı." });
+        }
+
+
 
         // POST: Admin/CreateCourse
         //[HttpPost]
@@ -349,57 +542,57 @@ namespace ADYS.Controllers
 
 
         // GET: Admin/EditCourse/{id}
-        public ActionResult EditCourse(int id)
-        {
-            if (Session["UserRole"] == null || Session["UserRole"].ToString() != "Admin")
-            {
-                TempData["ErrorMessage"] = "Bu sayfaya erişmek için giriş yapmalısınız.";
-                return RedirectToAction("Index", "Login");
-            }
-            var course = db.Courses.Find(id);
-            if (course == null) return HttpNotFound();
+        //public ActionResult EditCourse(int id)
+        //{
+        //    if (Session["UserRole"] == null || Session["UserRole"].ToString() != "Admin")
+        //    {
+        //        TempData["ErrorMessage"] = "Bu sayfaya erişmek için giriş yapmalısınız.";
+        //        return RedirectToAction("Index", "Login");
+        //    }
+        //    var course = db.Courses.Find(id);
+        //    if (course == null) return HttpNotFound();
 
-            var advisors = db.Users
-                .Include(u => u.UserRoles.Select(ur => ur.Role))
-                .Where(u => u.UserRoles.Any(ur => ur.Role.RoleName == "Advisor"))
-                .ToList();
+        //    var advisors = db.Users
+        //        .Include(u => u.UserRoles.Select(ur => ur.Role))
+        //        .Where(u => u.UserRoles.Any(ur => ur.Role.RoleName == "Advisor"))
+        //        .ToList();
 
-            ViewBag.Advisors = new SelectList(advisors, "AdvisorId", "UserName", course.AdvisorId);
-            ViewBag.Departments = new SelectList(db.Departments, "DepartmentId", "DepartmentName", course.DepartmentId);
-            return View(course);
-        }
+        //    ViewBag.Advisors = new SelectList(advisors, "AdvisorId", "UserName", course.AdvisorId);
+        //    ViewBag.Departments = new SelectList(db.Departments, "DepartmentId", "DepartmentName", course.DepartmentId);
+        //    return View(course);
+        //}
 
-        // POST: Admin/EditCourse
-        [HttpPost]
-        public ActionResult EditCourse(Course course)
-        {
-            if (ModelState.IsValid)
-            {
-                db.Entry(course).State = EntityState.Modified;
-                db.SaveChanges();
-                return RedirectToAction("ManageCourses");
-            }
+        //// POST: Admin/EditCourse
+        //[HttpPost]
+        //public ActionResult EditCourse(Course course)
+        //{
+        //    if (ModelState.IsValid)
+        //    {
+        //        db.Entry(course).State = EntityState.Modified;
+        //        db.SaveChanges();
+        //        return RedirectToAction("ManageCourses");
+        //    }
 
-            var advisors = db.Users
-                .Include(u => u.UserRoles.Select(ur => ur.Role))
-                .Where(u => u.UserRoles.Any(ur => ur.Role.RoleName == "Advisor"))
-                .ToList();
+        //    var advisors = db.Users
+        //        .Include(u => u.UserRoles.Select(ur => ur.Role))
+        //        .Where(u => u.UserRoles.Any(ur => ur.Role.RoleName == "Advisor"))
+        //        .ToList();
 
-            ViewBag.Advisors = new SelectList(advisors, "UserId", "UserName", course.AdvisorId);
-            ViewBag.Departments = new SelectList(db.Departments, "DepartmentId", "DepartmentName", course.DepartmentId);
-            return View(course);
-        }
+        //    ViewBag.Advisors = new SelectList(advisors, "UserId", "UserName", course.AdvisorId);
+        //    ViewBag.Departments = new SelectList(db.Departments, "DepartmentId", "DepartmentName", course.DepartmentId);
+        //    return View(course);
+        //}
 
         // GET: Admin/DeleteCourse/{id}
-        public ActionResult DeleteCourse(int id)
-        {
-            var course = db.Courses.Find(id);
-            if (course == null) return HttpNotFound();
+        //public ActionResult DeleteCourse(int id)
+        //{
+        //    var course = db.Courses.Find(id);
+        //    if (course == null) return HttpNotFound();
 
-            db.Courses.Remove(course);
-            db.SaveChanges();
-            return RedirectToAction("ManageCourses");
-        }
+        //    db.Courses.Remove(course);
+        //    db.SaveChanges();
+        //    return RedirectToAction("ManageCourses");
+        //}
 
         // GET: Admin/DeleteDepartment/{id}
         public ActionResult DeleteDepartment(int id)
@@ -427,59 +620,91 @@ namespace ADYS.Controllers
         }
 
         // GET: Admin/CreateDepartment
-        public ActionResult CreateDepartment(int? id)
-        {
-            if (Session["UserRole"] == null || Session["UserRole"].ToString() != "Admin")
-            {
-                TempData["ErrorMessage"] = "Bu sayfaya erişmek için giriş yapmalısınız.";
-                return RedirectToAction("Index", "Login");
-            }
-            if (id.HasValue)
-            {
-                var department = db.Departments.Find(id.Value);
-                if (department == null) return HttpNotFound();
-                return View(department); // Düzenleme
-            }
+        //public ActionResult CreateDepartment(int? id)
+        //{
+        //    if (Session["UserRole"] == null || Session["UserRole"].ToString() != "Admin")
+        //    {
+        //        TempData["ErrorMessage"] = "Bu sayfaya erişmek için giriş yapmalısınız.";
+        //        return RedirectToAction("GeneralLogin", "Login");
+        //    }
+        //    if (id.HasValue)
+        //    {
+        //        var department = db.Departments.Find(id.Value);
+        //        if (department == null) return HttpNotFound();
+        //        return View(department); // Düzenleme
+        //    }
 
-            return View(new Department()); // Yeni ekleme
-        }
-        [HttpGet]
-        public JsonResult GetDepartmentName(int id)
-        {
-            var department = db.Departments.Find(id);
-            if (department == null)
-            {
-                return Json(new { success = false }, JsonRequestBehavior.AllowGet);
-            }
+        //    return View(new Department()); // Yeni ekleme
+        //}
+        //[HttpGet]
+        //public JsonResult GetDepartmentName(int id)
+        //{
+        //    var department = db.Departments.Find(id);
+        //    if (department == null)
+        //    {
+        //        return Json(new { success = false }, JsonRequestBehavior.AllowGet);
+        //    }
 
-            return Json(new { success = true, name = department.DepartmentName }, JsonRequestBehavior.AllowGet);
-        }
+        //    return Json(new { success = true, name = department.DepartmentName }, JsonRequestBehavior.AllowGet);
+        //}
 
 
-        [HttpPost]
-        public ActionResult CreateDepartmentInline(string DepartmentName)
-        {
-            if (!string.IsNullOrWhiteSpace(DepartmentName))
-            {
-                db.Departments.Add(new Department { DepartmentName = DepartmentName });
-                db.SaveChanges();
-            }
+        //[HttpPost]
+        //public ActionResult CreateDepartmentInline(string DepartmentName)
+        //{
+        //    if (!string.IsNullOrWhiteSpace(DepartmentName))
+        //    {
+        //        db.Departments.Add(new Department { DepartmentName = DepartmentName });
+        //        db.SaveChanges();
+        //    }
 
-            return RedirectToAction("ManageDepartments");
-        }
+        //    return RedirectToAction("ManageDepartments");
+        //}
         // POST: Admin/UpdateDepartmentInline
+        //[HttpPost]
+        //public ActionResult UpdateDepartmentInline(int SelectedDepartmentId, string NewDepartmentName)
+        //{
+        //    var department = db.Departments.Find(SelectedDepartmentId);
+        //    if (department != null && !string.IsNullOrWhiteSpace(NewDepartmentName))
+        //    {
+        //        department.DepartmentName = NewDepartmentName;
+        //        db.SaveChanges();
+        //    }
+
+        //    return RedirectToAction("ManageDepartments");
+        //}
+
         [HttpPost]
-        public ActionResult UpdateDepartmentInline(int SelectedDepartmentId, string NewDepartmentName)
+        public ActionResult SaveDepartment(int? DepartmentId, string DepartmentName)
         {
-            var department = db.Departments.Find(SelectedDepartmentId);
-            if (department != null && !string.IsNullOrWhiteSpace(NewDepartmentName))
+            if (string.IsNullOrWhiteSpace(DepartmentName))
             {
-                department.DepartmentName = NewDepartmentName;
-                db.SaveChanges();
+                TempData["ErrorMessage"] = "Bölüm adı boş olamaz.";
+                return RedirectToAction("ManageDepartments");
             }
 
+            if (DepartmentId.HasValue && DepartmentId.Value > 0)
+            {
+                // Güncelle
+                var dept = db.Departments.Find(DepartmentId.Value);
+                if (dept != null)
+                {
+                    dept.DepartmentName = DepartmentName;
+                    TempData["SuccessMessage"] = "Bölüm başarıyla güncellendi.";
+                }
+            }
+            else
+            {
+                // Yeni Ekle
+                var newDept = new Department { DepartmentName = DepartmentName };
+                db.Departments.Add(newDept);
+                TempData["SuccessMessage"] = "Yeni bölüm başarıyla eklendi.";
+            }
+
+            db.SaveChanges();
             return RedirectToAction("ManageDepartments");
         }
+
         //// POST: Admin/CreateDepartment SİLİNECEK
         //[HttpPost]
         //public ActionResult CreateDepartment(Department Department)
@@ -566,44 +791,64 @@ namespace ADYS.Controllers
             var terms = db.Terms.ToList();
             return View(terms);
         }
-     
+
         [HttpPost]
         public ActionResult CreateOrUpdateTerm(int? TermId, string TermName, DateTime CourseSelectionStart, DateTime CourseSelectionEnd, bool IsActive)
         {
-            Term term;
-
-            if (TermId.HasValue && TermId.Value > 0)
+            try
             {
-                term = db.Terms.Find(TermId.Value);
-                if (term == null)
+                if (IsActive)
                 {
-                    TempData["ErrorMessage"] = "Dönem bulunamadı.";
-                    return RedirectToAction("ManageTerms");
+                    var aktifDonemVarMi = db.Terms.Any(t => t.IsActive && (!TermId.HasValue || t.TermId != TermId.Value));
+
+                    if (aktifDonemVarMi)
+                    {
+                        TempData["AlertMessage"] = "Aynı anda iki donem aktif olamaz.";
+                        TempData["ShowAlert"] = true;
+                        return RedirectToAction("ManageTerms");
+                    }
                 }
 
-                term.TermName = TermName;
-                term.CourseSelectionStart = CourseSelectionStart;
-                term.CourseSelectionEnd = CourseSelectionEnd;
-                term.IsActive = IsActive;
+                Term term;
 
-                TempData["SuccessMessage"] = "Dönem başarıyla güncellendi.";
-            }
-            else
-            {
-                term = new Term
+                if (TermId.HasValue && TermId.Value > 0)
                 {
-                    TermName = TermName,
-                    CourseSelectionStart = CourseSelectionStart,
-                    CourseSelectionEnd = CourseSelectionEnd,
-                    IsActive = IsActive
-                };
+                    term = db.Terms.Find(TermId.Value);
+                    if (term == null)
+                    {
+                        TempData["ErrorMessage"] = "Donem bulunamadi.";
+                        return RedirectToAction("ManageTerms");
+                    }
 
-                db.Terms.Add(term);
-                TempData["SuccessMessage"] = "Yeni dönem başarıyla eklendi.";
+                    term.TermName = TermName;
+                    term.CourseSelectionStart = CourseSelectionStart;
+                    term.CourseSelectionEnd = CourseSelectionEnd;
+                    term.IsActive = IsActive;
+
+                    TempData["SuccessMessage"] = "Donem basariyla guncellendi.";
+                }
+                else
+                {
+                    term = new Term
+                    {
+                        TermName = TermName,
+                        CourseSelectionStart = CourseSelectionStart,
+                        CourseSelectionEnd = CourseSelectionEnd,
+                        IsActive = IsActive
+                    };
+
+                    db.Terms.Add(term);
+                    TempData["SuccessMessage"] = "Yeni donem basariyla eklendi.";
+                }
+
+                db.SaveChanges();
+                return RedirectToAction("ManageTerms");
             }
-
-            db.SaveChanges();
-            return RedirectToAction("ManageTerms");
+            catch (Exception ex)
+            {
+                TempData["ErrorMessage"] = "Bir hata olustu.";
+                return RedirectToAction("ManageTerms");
+            }
         }
 
 

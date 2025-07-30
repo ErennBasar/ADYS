@@ -4,84 +4,121 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<div class="col-12 mb-4">
+<button class="btn btn-primary mb-3" id="openAddStudentModal">Yeni Öğrenci Ekle</button>
+
+<div class="col-12">
     <div class="card glass-card">
         <div class="card-header text-white">
-            <h4 class="m-0">Yeni Öğrenci Ekle</h4>
+            <h4>Öğrenci Listesi</h4>
         </div>
         <div class="card-body">
-            @using (Html.BeginForm("AddStudent", "Admin", FormMethod.Post))
-            {
-                <div class="row">
-                    <div class="form-group col-md-3 mb-3">
-                        @Html.Label("Ad Soyad", new { @class = "form-label" })
-                        @Html.TextBox("FullName", null, new { @class = "form-control", placeholder = "Örn: Ahmet Yılmaz" })
-                    </div>
-                    <div class="form-group col-md-3 mb-3">
-                        @Html.Label("Email", new { @class = "form-label" })
-                        @Html.TextBox("Email", null, new { @class = "form-control", type = "email", placeholder = "ahmet@uni.edu.tr" })
-                    </div>
-                    <div class="form-group col-md-3 mb-3">
-                        @Html.Label("Şifre", new { @class = "form-label" })
-                        @Html.Password("Password", null, new { @class = "form-control", placeholder = "••••••" })
-                    </div>
-                    <div class="form-group col-md-3 mb-3">
-                        @Html.Label("Danışman", new { @class = "form-label" })
-                        @Html.DropDownList("AdvisorId", (SelectList)ViewBag.Advisors, "Seçiniz", new { @class = "form-select" })
-                    </div>
-                </div>
-
-                <div class="text-end mt-3">
-                    <button type="submit" class="btn px-4">Kaydet</button>
-                </div>
-            }
+            <div class="table-responsive">
+                <table id="viewStudents" class="display custom-datatable">
+                    <thead>
+                        <tr>
+                            <th>Ad Soyad</th>
+                            <th>Email</th>
+                            <th>Danışman</th>
+                            <th>İşlem</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var student in Model)
+                        {
+                            <tr>
+                                <td>@student.StudentName</td>
+                                <td>@student.StudentEmail</td>
+                                <td>@(student.AdvisorName ?? "Danışman yok")</td>
+                                <td>
+                                    <button type="button"
+                                            class="btn btn-sm btn-warning editStudentBtn"
+                                            data-id="@student.StudentId"
+                                            data-name="@student.StudentName"
+                                            data-email="@student.StudentEmail"
+                                            data-advisor="@student.AdvisorName">
+                                        Güncelle
+                                    </button>
+                                    <a href="@Url.Action("DeleteStudent", "Admin", new { id = student.StudentId })"
+                                       class="btn btn-danger btn-sm"
+                                       onclick="return confirm('Öğrenciyi silmek istediğinize emin misiniz?');">Sil</a>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
 </div>
 
-    <div class="col-12">
-        <div class="card glass-card ">
-            <div class="card-header text-white">
-                <h4>Öğrenci Listesi</h4>
+<!-- Öğrenci Modal -->
+<div class="modal fade" id="studentModal" tabindex="-1" aria-labelledby="studentModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content glass-card">
+            <div class="modal-header">
+                <h5 class="modal-title text-black" id="studentModalLabel">Öğrenci Ekle / Güncelle</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
             </div>
-            <div class="card-body">
-                <div class="table-responsive">
-                    <table id="viewStudents" class="display custom-datatable">
-                        <thead>
-                            <tr>
-                                <th>Ad Soyad</th>
-                                <th>Email</th>
-                                <th>Danışman</th>
-                                <th>İşlem</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach (var student in Model)
-                            {
-                                <tr>
-                                    <td>@student.StudentName </td>
-                                    <td>@student.StudentEmail </td>
-                                    <td>@(student.AdvisorName != null ? student.AdvisorName : "Danışman yok")</td>
-                                    <td>
-                                        @Html.ActionLink("Sil", "DeleteStudent", "Admin", new { id = student.StudentId }, new { @class = "btn btn-danger btn-sm" })
-                                    </td>
-                                </tr>
-                            }
-                        </tbody>
-                    </table>
-                </div>
+            <div class="modal-body text-dark">
+                @using (Html.BeginForm("AddOrUpdateStudent", "Admin", FormMethod.Post, new { id = "studentForm" }))
+                {
+                    @Html.Hidden("StudentId", null, new { id = "StudentId" })
+
+                    <div class="form-group mb-3">
+                        @Html.Label("FullName", "Ad Soyad", new { @class = "form-label" })
+                        @Html.TextBox("FullName", null, new { @class = "form-control", required = "required", id = "FullName" })
+                    </div>
+                    <div class="form-group mb-3">
+                        @Html.Label("Email", "Email", new { @class = "form-label" })
+                        @Html.TextBox("Email", null, new { @class = "form-control", required = "required", id = "Email" })
+                    </div>
+                    <div class="form-group mb-3">
+                        @Html.Label("Password", "Şifre", new { @class = "form-label" })
+                        @Html.Password("Password", null, new { @class = "form-control", id = "Password" })
+                    </div>
+                    <div class="form-group mb-3">
+                        @Html.Label("AdvisorId", "Danışman", new { @class = "form-label" })
+                        @Html.DropDownList("AdvisorId", ViewBag.Advisors as SelectList, "Seçiniz", new { @class = "form-select", required = "required", id = "AdvisorId" })
+                    </div>
+
+                    <div class="text-end">
+                        <button type="submit" class="btn btn-success px-4">Kaydet</button>
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Kapat</button>
+                    </div>
+                }
             </div>
         </div>
     </div>
+</div>
 
-    @section scripts {
-        <script>
-            $(document).ready(function () {
-                $('#viewStudents').DataTable({
-                    paging: true,
-                    searching: true,
-                    ordering: true,
-                });
+@section scripts {
+    <script>
+        $(document).ready(function () {
+            $('#viewStudents').DataTable({
+                paging: true,
+                searching: true,
+                ordering: true,
+                language: {
+                    "url": "/Scripts/i18n/tr.json"
+                }
             });
-        </script>
-    }
+
+            $('#openAddStudentModal').click(function () {
+                $('#studentForm')[0].reset();
+                $('#StudentId').val('');
+                $('#studentModalLabel').text('Yeni Öğrenci Ekle');
+                $('#studentModal').modal('show');
+            });
+
+            $('.editStudentBtn').click(function () {
+                $('#StudentId').val($(this).data('id'));
+                $('#FullName').val($(this).data('name'));
+                $('#Email').val($(this).data('email'));
+                $('#AdvisorId').val($(this).data('advisor'));
+                $('#Password').val('');
+                $('#studentModalLabel').text('Öğrenci Güncelle');
+                $('#studentModal').modal('show');
+            });
+        });
+    </script>
+}

@@ -13,7 +13,7 @@ namespace ADYS.Migrations
         
         string IMigrationMetadata.Id
         {
-            get { return "202507191343584_InitialCreate"; }
+            get { return "202507290625451_InitialCreate"; }
         }
         
         string IMigrationMetadata.Source

@@ -8,29 +8,84 @@
     <div class="alert alert-success text-center">@TempData["SuccessMessage"]</div>
 }
 
-
-<div class="row mb-4">
-    <div class="col-12">
-        <div class="card glass-card">
+<!-- DataTable -->
+<div class="col-12">
+    <div class="card glass-card">      
             <div class="card-header text-white">
-                <h4 class="m-0">Dönem Ekle / Güncelle</h4>
-            </div>
+                <h2>Dönem Yönetimi</h2>
+                <button type="button" class="btn btn-success mb-3 text-end"
+                        data-bs-toggle="modal"
+                        data-bs-target="#termModal">
+                    <i class="bi bi-plus-circle"></i> Dönem Ekle
+                </button>
+            </div>      
             <div class="card-body">
-                @using (Html.BeginForm("CreateOrUpdateTerm", "Admin", FormMethod.Post))
+                <div class="table-responsive">
+                    <table id="viewTerms" class="display custom-datatable">
+                        <thead>
+                            <tr>
+                                <th>Adı</th>
+                                <th>Durum</th>
+                                <th>Seçim Başlangıç</th>
+                                <th>Seçim Bitiş</th>
+                                <th>İşlemler</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var term in Model)
+                            {
+                                <tr>
+                                    <td>@term.TermName</td>
+                                    <td>@(term.IsActive ? "Açık" : "Kapalı")</td>
+                                    <td>@(term.CourseSelectionStart?.ToString("dd-MM-yyyy"))</td>
+                                    <td>@(term.CourseSelectionEnd?.ToString("dd-MM-yyyy"))</td>
+                                    <td>
+                                        <button type="button" class="btn btn-sm btn-warning editTermBtn"
+                                                data-bs-toggle="modal"
+                                                data-bs-target="#termModal"
+                                                data-id="@term.TermId"
+                                                data-name="@term.TermName"
+                                                data-start="@(term.CourseSelectionStart?.ToString("yyyy-MM-dd"))"
+                                                data-end="@(term.CourseSelectionEnd?.ToString("yyyy-MM-dd"))"
+                                                data-active="@term.IsActive.ToString().ToLower()">
+                                            Güncelle
+                                        </button>
+
+                                        @Html.ActionLink("Sil", "DeleteTerm", new { id = term.TermId }, new { @class = "btn btn-danger btn-sm", onclick = "return confirm('Silmek istediğinize emin misiniz?');" })
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+<!-- Modal -->
+<div class="modal fade" id="termModal" tabindex="-1" aria-labelledby="termModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content glass-card">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title" id="termModalLabel">Dönem Ekle / Güncelle</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Kapat"></button>
+            </div>
+            <div class="modal-body text-dark">
+                @using (Html.BeginForm("CreateOrUpdateTerm", "Admin", FormMethod.Post, new { id = "termForm" }))
                 {
                     @Html.Hidden("TermId", null, new { id = "TermId" })
 
                     <div class="row">
                         <div class="form-group col-md-4 mb-3">
                             @Html.Label("TermName", "Dönem Adı", new { @class = "form-label" })
-                            @Html.TextBox("TermName", null, new { @class = "form-control", id = "TermName", placeholder = "Örn: Güz 2025", required = "required" })
+                            @Html.TextBox("TermName", null, new { @class = "form-control", id = "TermName", required = "required" })
                         </div>
                         <div class="form-group col-md-3 mb-3">
-                            @Html.Label("CourseSelectionStart", "Seçim Başlangıç", new { @class = "form-label" })
+                            @Html.Label("CourseSelectionStart", "Dönem Başlangıç", new { @class = "form-label" })
                             @Html.TextBox("CourseSelectionStart", null, new { @class = "form-control", id = "CourseSelectionStart", type = "date", required = "required" })
                         </div>
                         <div class="form-group col-md-3 mb-3">
-                            @Html.Label("CourseSelectionEnd", "Seçim Bitiş", new { @class = "form-label" })
+                            @Html.Label("CourseSelectionEnd", "Dönem Bitiş", new { @class = "form-label" })
                             @Html.TextBox("CourseSelectionEnd", null, new { @class = "form-control", id = "CourseSelectionEnd", type = "date", required = "required" })
                         </div>
                         <div class="form-group col-md-2 mb-3 d-flex align-items-end">
@@ -41,61 +96,32 @@
                             </div>
                         </div>
                     </div>
-                    <div class="text-end">
-                        <button type="submit" class="btn btn-success px-4" id="submitBtn">Ekle</button>
-                    </div>
                 }
             </div>
-        </div>
-    </div>
-</div>
-
-<div class="col-12">
-    <div class="card glass-card">
-        <div class="card-header text-white">
-            <h2>Dönem Yönetimi</h2>
-        </div>
-        <div class="card-body">
-            <div class="table-responsive">
-                <table id="viewTerms" class="display custom-datatable">
-                    <thead>
-                        <tr>
-                            <th>Adı</th>
-                            <th>Durum</th>
-                            <th>Seçim Başlangıç</th>
-                            <th>Seçim Bitiş</th>
-                            <th>İşlemler</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach (var term in Model)
-                        {
-                            <tr>
-                                <td>@term.TermName</td>
-                                <td>@(term.IsActive ? "Açık" : "Kapalı")</td>
-                                <td>@(term.CourseSelectionStart?.ToString("dd-MM-yyyy"))</td>
-                                <td>@(term.CourseSelectionEnd?.ToString("dd-MM-yyyy"))</td>
-                                <td>
-                                    <button type="button" class="btn btn-sm editTermBtn"
-                                            data-id="@term.TermId"
-                                            data-name="@term.TermName"
-                                            data-start="@(term.CourseSelectionStart?.ToString("dd-MM-yyyy"))"
-                                            data-end="@(term.CourseSelectionEnd?.ToString("dd-MM-yyyy"))"
-                                            data-active="@term.IsActive.ToString().ToLower()">
-                                        Güncelle
-                                    </button>
-                                    @Html.ActionLink("Sil", "DeleteTerm", new { id = term.TermId }, new { @class = "btn btn-danger btn-sm", onclick = "return confirm('Silmek istediğinize emin misiniz?');" })
-                                </td>
-                            </tr>
-                        }
-                    </tbody>
-                </table>
+            <div class="modal-footer">
+                <button type="submit" class="btn-success" form="termForm" id="submitBtn">Kaydet</button>
+                <button type="button" class="btn-secondary" data-bs-dismiss="modal">Kapat</button>
             </div>
         </div>
     </div>
 </div>
 
+
 @section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    @if (TempData["ShowAlert"] != null && (bool)TempData["ShowAlert"])
+    {
+        <script>
+            Swal.fire({
+                icon: 'warning',
+                title: 'Uyarı',
+                text: '@TempData["AlertMessage"]',
+                confirmButtonText: 'Tamam',
+                confirmButtonColor: '#3085d6'
+            });
+        </script>
+    }
     <script>
         $(document).ready(function () {
             $('#viewTerms').DataTable({
@@ -103,25 +129,58 @@
                 searching: true,
                 ordering: true,
                 language: {
-                    url: '//cdn.datatables.net/plug-ins/2.3.2/i18n/tr.json',
-                },
+                    "url": "/Scripts/i18n/tr.json"
+                }
             });
         });
     </script>
     <script>
+        /*Güncelleme*/
+        function clearForm() {
+            $('#TermId').val('');
+            $('#TermName').val('');
+            $('#CourseSelectionStart').val('');
+            $('#CourseSelectionEnd').val('');
+            $('#IsActive').prop('checked', false);
+            $('#submitBtn').text("Ekle").removeClass('btn-warning').addClass('btn-success');
+        }
+
+        $('.editTermBtn').click(function () {
+            $('#TermId').val($(this).data('id'));
+            $('#TermName').val($(this).data('name'));
+            $('#CourseSelectionStart').val($(this).data('start'));
+            $('#CourseSelectionEnd').val($(this).data('end'));
+
+            // Boolean olarak ayarla
+            let isActive = $(this).data('active') === true || $(this).data('active') === "true";
+            $('#IsActive').prop('checked', isActive);
+
+            $('#submitBtn').text("Güncellemeyi Onayla").removeClass('btn-success').addClass('btn-warning');
+
+            // Modal'ı aç
+            $('#termModal').modal('show');
+        });
+
+    </script>
+    <script>
+        /*Ekleme*/
         $(document).ready(function () {
-            $('#viewTerms').DataTable();
+            // Modal her açıldığında sıfırlansın
+            $('#termModal').on('show.bs.modal', function (event) {
+                var button = $(event.relatedTarget);
 
-            $('.editTermBtn').click(function () {
-                $('#TermId').val($(this).data('id'));
-                $('#TermName').val($(this).data('name'));
-                $('#CourseSelectionStart').val($(this).data('start'));
-                $('#CourseSelectionEnd').val($(this).data('end'));
-                $('#IsActive').prop('checked', $(this).data('active') === "true");
-
-                $('#submitBtn').text("Güncellemeyi Onayla").removeClass('btn-success').addClass('btn-warning');
+                // Eğer buton bir güncelleme değilse, modal boş şekilde açılsın
+                if (!button.hasClass("editTermBtn")) {
+                    $('#TermId').val('');
+                    $('#TermName').val('');
+                    $('#CourseSelectionStart').val('');
+                    $('#CourseSelectionEnd').val('');
+                    $('#IsActive').prop('checked', false);
+                    $('#submitBtn').text("Ekle").removeClass('btn-warning').addClass('btn-success');
+                }
             });
         });
     </script>
+
 }
 

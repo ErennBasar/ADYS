@@ -3,64 +3,12 @@
     ViewBag.Title = "Bölüm Tanımlamaları";
 }
 
-
-<div class="row">
-
-    <div class="col-md-6 mb-4">
-        <div class="card glass-card h-100">
-            <div class="card-header text-white">
-                Yeni Bölüm Ekle
-            </div>
-            <div class="card-body d-flex flex-column justify-content-between">
-                @using (Html.BeginForm("CreateDepartmentInline", "Admin", FormMethod.Post))
-                {
-                    <div>
-                        <div class="mb-3">
-                            @Html.Label("DepartmentName", "Bölüm Adı", new { @class = "form-label" })
-                            @Html.TextBox("DepartmentName", null, new { @class = "form-control", required = "required", placeholder = "Örn: Bilgisayar Mühendisliği" })
-                        </div>
-                    </div>
-                    <div class="text-start mt-auto pt-4">
-                        <button type="submit" class="btn btn-success">Ekle</button>
-                    </div>
-                }
-            </div>
-        </div>
-    </div>
-
-
-    <div class="col-md-6 mb-4">
-        <div class="card glass-card h-100">
-            <div class="card-header text-white">
-                Bölüm Güncelle
-            </div>
-            <div class="card-body">
-                @using (Html.BeginForm("UpdateDepartmentInline", "Admin", FormMethod.Post))
-                {
-                    <div class="mb-3">
-                        @Html.Label("SelectedDepartmentId", "Güncellenecek Bölüm", new { @class = "form-label" })
-                        @Html.DropDownList("SelectedDepartmentId", new SelectList(ViewBag.Departments as List<ADYS.Models.Department>, "DepartmentId", "DepartmentName"), "Seçiniz", new { @class = "form-select", required = "required", @id = "departmentDropdown" })
-                    </div>
-
-                    <div class="mb-3">
-                        @Html.Label("NewDepartmentName", "Yeni Bölüm Adı", new { @class = "form-label" })
-                        @Html.TextBox("NewDepartmentName", null, new { @class = "form-control", required = "required", placeholder = "Yeni ad giriniz", @id = "newDepartmentName" })
-                    </div>
-
-                    <div class="text-end">
-                        <button type="submit" class="btn btn-warning">Güncelle</button>
-                    </div>
-                }
-            </div>
-        </div>
-    </div>
+<div class="text-end mb-3">
+    <button class="btn" id="openAddModal">Yeni Bölüm Ekle</button>
 </div>
 
-
-
-
 <div class="col-12">
-    <div class="card glass-card ">
+    <div class="card glass-card">
         <div class="card-header text-white">
             <h2>Bölüm Tanımlamaları</h2>
         </div>
@@ -79,14 +27,45 @@
                             <tr>
                                 <td>@department.DepartmentName</td>
                                 <td>
-                                    @Html.ActionLink("Düzenle", "CreateDepartment", "Admin", new { id = department.DepartmentId }, new { @class = "btn btn-sm btn-warning" })
-                                    @Html.ActionLink("Sil", "DeleteDepartment", "Admin", new { id = department.DepartmentId }, new { @class = "btn btn-sm btn-danger", onclick = "return confirm('Silmek istediğinize emin misiniz?');" })
+                                    <button class="btn btn-sm editDepartmentBtn"
+                                            data-id="@department.DepartmentId"
+                                            data-name="@department.DepartmentName">
+                                        Güncelle
+                                    </button>
+                                    @Html.ActionLink("Sil", "DeleteDepartment", "Admin", new { id = department.DepartmentId }, new { @class = "btn btn-sm", onclick = "return confirm('Silmek istediğinize emin misiniz?');" })
                                 </td>
                             </tr>
                         }
                     </tbody>
                 </table>
             </div>
+        </div>
+    </div>
+</div>
+
+<!-- MODAL -->
+<div class="modal fade" id="departmentModal" tabindex="-1" aria-labelledby="departmentModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content text-white">
+            <div class="modal-header bg-primary">
+                <h5 class="modal-title" id="departmentModalLabel">Bölüm İşlemleri</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Kapat"></button>
+            </div>
+            @using (Html.BeginForm("SaveDepartment", "Admin", FormMethod.Post))
+            {
+                <div class="modal-body">
+                    @Html.Hidden("DepartmentId", null, new { id = "DepartmentId" })
+
+                    <div class="mb-3">
+                        @Html.Label("DepartmentName", "Bölüm Adı", new { @class = "form-label text-white" })
+                        @Html.TextBox("DepartmentName", null, new { @class = "form-control", required = "required", id = "DepartmentName" })
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-success" id="saveBtn">Kaydet</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Kapat</button>
+                </div>
+            }
         </div>
     </div>
 </div>
@@ -98,31 +77,32 @@
                 paging: true,
                 searching: true,
                 ordering: true,
+                language: {
+                    "url": "/Scripts/i18n/tr.json"
+                }
             });
         });
     </script>
-    <script>
-    $(document).ready(function () {
-        $("#departmentDropdown").change(function () {
-            var departmentId = $(this).val();
+    <script>       
+            // Yeni Ekle Modal Aç
+            $('#openAddModal').click(function () {
+                $('#DepartmentId').val('');
+                $('#DepartmentName').val('');
+                $('#departmentModalLabel').text("Yeni Bölüm Ekle");
+                $('#saveBtn').text("Ekle").removeClass("btn-warning").addClass("btn-success");
+                $('#departmentModal').modal('show');
+            });
 
-            if (departmentId) {
-                $.ajax({
-                    url: '@Url.Action("GetDepartmentName", "Admin")',
-                    type: 'GET',
-                    data: { id: departmentId },
-                    success: function (response) {
-                        if (response.success) {
-                            $("#newDepartmentName").val(response.name);
-                        } else {
-                            $("#newDepartmentName").val("");
-                        }
-                    }
-                });
-            } else {
-                $("#newDepartmentName").val("");
-            }
-        });
-    });
+            // Güncelle Modal Aç
+            $('.editDepartmentBtn').click(function () {
+                const id = $(this).data('id');
+                const name = $(this).data('name');
+
+                $('#DepartmentId').val(id);
+                $('#DepartmentName').val(name);
+                $('#departmentModalLabel').text("Bölüm Güncelle");
+                $('#saveBtn').text("Güncelle").removeClass("btn-success").addClass("btn-warning");
+                $('#departmentModal').modal('show');
+            });        
     </script>
 }

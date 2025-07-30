@@ -50,12 +50,6 @@ namespace ADYS.Data
                  .HasForeignKey(ur => ur.RoleId) // FK bu alan
                  .WillCascadeOnDelete(false);
 
-            modelBuilder.Entity<User>()
-                 .HasOptional(u => u.Advisor)
-                 .WithMany(a => a.Students)
-                 .HasForeignKey(u => u.AdvisorId)
-                 .WillCascadeOnDelete(false);
-
             modelBuilder.Entity<AdvisorAssignment>()
             .HasRequired(aa => aa.Student)
             .WithMany(u => u.AdvisorAssignments)

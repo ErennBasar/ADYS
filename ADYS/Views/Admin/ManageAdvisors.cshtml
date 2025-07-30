@@ -4,41 +4,8 @@
     ViewBag.Title = "Danışman Tanımlamaları";
 }
 
+<button class="btn btn-primary mb-3" id="openAddAdvisorModal">Yeni Danışman Ekle</button>
 
-
-@*<p>
-        @Html.ActionLink("Yeni Danışman Ekle", "CreateAdvisor", "Admin", null, new { @class = "btn btn-success" })
-    </p>*@
-<div class="col-12 mb-4">
-    <div class="card glass-card">
-        <div class="card-header text-white">
-            <h4 class="m-0">Yeni Öğrenci Ekle</h4>
-        </div>
-        <div class="card-body">
-            @using (Html.BeginForm("CreateAdvisor", "Admin", FormMethod.Post))
-            {
-                @*@Html.HiddenFor(m => m.AdvisorId)*@
-                <div class="row">
-                    <div class="form-group col-md-3">
-                        @Html.Label("Ad Soyad")
-                        @Html.TextBox("FullName", null, new { @class = "form-control" })
-                    </div>
-                    <div class="form-group col-md-3">
-                        @Html.Label("Email")
-                        @Html.TextBox("Email", null, new { @class = "form-control", type = "email" })
-                    </div>
-                    <div class="form-group col-md-3">
-                        @Html.Label("Şifre")
-                        @Html.Password("Password", null, new { @class = "form-control" })
-                    </div>
-                    <div class="text-start mt-3">
-                        <button type="submit" class="btn">Kaydet</button>
-                    </div>
-                </div>
-            }
-        </div>
-    </div>
-</div>
 <div class="col-12">
     <div class="card glass-card">
         <div class="card-header text-white">
@@ -61,8 +28,20 @@
                                 <td>@advisor.UserName</td>
                                 <td>@advisor.Email</td>
                                 <td>
-                                    @Html.ActionLink("Güncelle", "CreateAdvisor", "Admin", new { id = advisor.AdvisorId }, new { @class = "btn btn-warning btn-sm" })
-                                    @Html.ActionLink("Sil", "DeleteAdvisor", "Admin", new { id = advisor.AdvisorId }, new { @class = "btn btn-danger btn-sm", onclick = "return confirm('Silmek istediğinize emin misiniz?');" })
+                                    <button type="button"
+                                            class="btn btn-sm btn-warning editAdvisorBtn"
+                                            data-id="@advisor.UserId"
+                                            data-name="@advisor.UserName"
+                                            data-email="@advisor.Email">
+                                        Güncelle
+                                    </button>
+
+                                    <button type="button"
+                                            class="btn btn-danger btn-sm delete-advisor-btn"
+                                            data-id="@advisor.UserId">
+                                        Sil
+                                    </button>
+
                                 </td>
                             </tr>
                         }
@@ -73,14 +52,111 @@
     </div>
 </div>
 
+<div class="modal fade" id="advisorModal" tabindex="-1" aria-labelledby="advisorModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content glass-card">
+            <div class="modal-header">
+                <h5 class="modal-title text-black" id="advisorModalLabel">Danışman Ekle / Güncelle</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Kapat"></button>
+            </div>
+            <div class="modal-body text-dark">
+                @using (Html.BeginForm("CreateOrUpdateAdvisor", "Admin", FormMethod.Post, new { id = "advisorForm" }))
+                {
+                    @Html.Hidden("AdvisorId", null, new { id = "AdvisorId" })
+
+                    <div class="form-group mb-3">
+                        @Html.Label("UserName", "Ad Soyad", new { @class = "form-label" })
+                        @Html.TextBox("UserName", null, new { @class = "form-control", required = "required", id = "UserName" })
+                    </div>
+                    <div class="form-group mb-3">
+                        @Html.Label("Email", "Email", new { @class = "form-label" })
+                        @Html.TextBox("Email", null, new { @class = "form-control", type = "email", required = "required", id = "Email" })
+                    </div>
+                    <div class="form-group mb-3">
+                        @Html.Label("Password", "Şifre", new { @class = "form-label" })
+                        @Html.Password("Password", null, new { @class = "form-control", id = "Password" })
+                    </div>
+
+                    <div class="text-end">
+                        <button type="submit" class="btn btn-success px-4">Kaydet</button>
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Kapat</button>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+
 @section Scripts {
+
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
     <script>
         $(document).ready(function () {
             $('#viewAdvisors').DataTable({
                 paging: true,
                 searching: true,
                 ordering: true,
+                language: {
+                    "url": "/Scripts/i18n/tr.json"
+                }
+            });
+
+            // Yeni ekle
+            $('#openAddAdvisorModal').click(function () {
+                $('#advisorForm')[0].reset();
+                $('#AdvisorId').val('');
+                $('#advisorModalLabel').text('Yeni Danışman Ekle');
+                $('#Password').attr('required', true); // sadece eklemede
+                $('#advisorModal').modal('show');
+            });
+
+            // Güncelle modalı
+            $('.editAdvisorBtn').click(function () {
+                $('#AdvisorId').val($(this).data('id'));
+                $('#UserName').val($(this).data('name'));
+                $('#Email').val($(this).data('email'));
+                $('#Password').val(''); // şifre güncelleme opsiyonel olabilir
+                $('#advisorModalLabel').text('Danışman Güncelle');
+                $('#advisorModal').modal('show');
             });
         });
+    </script>
+    <script>
+    $(document).on('click', '.delete-advisor-btn', function () {
+        var advisorId = $(this).data('id');
+
+        Swal.fire({
+            title: 'Emin misiniz?',
+            text: "Bu danışmanı silmek istediğinize emin misiniz?",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#d33',
+            cancelButtonColor: '#3085d6',
+            confirmButtonText: 'Evet, sil!',
+            cancelButtonText: 'Vazgeç'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                $.ajax({
+                    url: '@Url.Action("DeleteAdvisor", "Admin")',
+                    type: 'POST',
+                    data: { id: advisorId },
+                    success: function (response) {
+                        if (response.success) {
+                            Swal.fire('Silindi!', response.message, 'success').then(() => {
+                                location.reload();
+                            });
+                        } else {
+                            Swal.fire('Hata!', response.message, 'error');
+                        }
+                    },
+                    error: function () {
+                        Swal.fire('Hata!', 'Silme işlemi sırasında bir hata oluştu.', 'error');
+                    }
+                });
+            }
+        });
+    });
     </script>
 }

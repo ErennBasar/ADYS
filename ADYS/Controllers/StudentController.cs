@@ -158,13 +158,36 @@ namespace ADYS.Controllers
             return View(model);
         }
 
+        private bool HasTimeConflict(List<Course> selectedCourses)
+        {
+            for (int i = 0; i < selectedCourses.Count; i++)
+            {
+                for (int j = i + 1; j < selectedCourses.Count; j++)
+                {
+                    if (selectedCourses[i].DayOfWeek == selectedCourses[j].DayOfWeek)
+                    {
+                        var aStart = selectedCourses[i].StartTime;
+                        var aEnd = selectedCourses[i].EndTime;
+                        var bStart = selectedCourses[j].StartTime;
+                        var bEnd = selectedCourses[j].EndTime;
 
-        // POST: Student/SelectCourses
-        //[OutputCache(NoStore = true, Duration = 0, VaryByParam = "*")]
-        [HttpPost]
+                        if (aStart < bEnd && bStart < aEnd)
+                        {
+                            return true;
+                        }
+                    }
+                }
+            }
+
+            return false;
+        }
+
+       // POST: Student/SelectCourses
+       // [OutputCache(NoStore = true, Duration = 0, VaryByParam = "*")]
+       [HttpPost]
         public ActionResult SelectCourses(List<CourseSelectionViewModel> selectedCourses)
         {
-           // int studentId = (int)(Session["StudentId"] ?? 0);
+            // int studentId = (int)(Session["StudentId"] ?? 0);
 
             int studentId = (int)(Session["StudentId"]);
 
@@ -176,13 +199,12 @@ namespace ADYS.Controllers
                 return RedirectToAction("GeneralLogin", "Login");
             }
 
-
             var selected = selectedCourses
                 .Where(c => c.IsSelected)
                 .ToList();
 
             int totalAkts = selected.Sum(c => c.AKTS);
-         
+
             if (totalAkts > 30)
             {
 
@@ -220,8 +242,42 @@ namespace ADYS.Controllers
 
             db.SaveChanges();
             return RedirectToAction("Dashboard", "Student", new { StudentId = studentId });
-            
+
         }
+        //[HttpPost]
+        //public ActionResult SelectCourses(int studentId, List<int> courseIds)
+        //{
+        //    var selectedCourses = db.Courses
+        //        .Where(c => courseIds.Contains(c.CourseId))
+        //        .ToList();
+
+        //    // ÇAKIŞMA KONTROLÜ
+        //    if (HasTimeConflict(selectedCourses))
+        //    {
+        //        TempData["ErrorMessage"] = "Seçilen dersler arasında zaman çakışması var!";
+        //        return RedirectToAction("SelectCourses");
+        //    }
+
+        //    // Eski seçimleri sil
+        //    var existingSelections = db.CourseSelections.Where(cs => cs.StudentId == studentId);
+        //    db.CourseSelections.RemoveRange(existingSelections);
+
+        //    // Yeni seçimleri kaydet
+        //    foreach (var courseId in courseIds)
+        //    {
+        //        db.CourseSelections.Add(new CourseSelection
+        //        {
+        //            StudentId = studentId,
+        //            CourseId = courseId
+        //        });
+        //    }
+
+        //    db.SaveChanges();
+
+        //    TempData["SuccessMessage"] = "Dersler başarıyla seçildi.";
+        //    return RedirectToAction("Dashboard", new { id = studentId });
+        //}
+
         public JsonResult CheckCapacity(int courseId)
         {
             var course = db.Courses.Find(courseId);
