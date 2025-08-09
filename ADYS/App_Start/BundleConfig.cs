@@ -28,7 +28,8 @@ namespace ADYS
             bundles.Add(new StyleBundle("~/Content/css").Include(
                       "~/Content/bootstrap.css",
                       "~/Content/site.css",
-                      "~/Content/GlassCard.css"));
+                      "~/Content/GlassCard.css",
+                      "~/Content/navbar.css" ));
         }
     }
 }

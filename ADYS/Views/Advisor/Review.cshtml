@@ -1,4 +1,5 @@
-﻿@model List<ADYS.ViewModels.ReviewCourseViewModel>
+﻿@*@model List<ADYS.ViewModels.ReviewCourseViewModel>*@
+@model List<MyApiProject.DTOs.ReviewCourseDto>
 @{
     ViewBag.Title = "Ders Onay Paneli";
     int toplamAkts = Model.Sum(m => m.AKTS);
@@ -75,6 +76,13 @@ else
 @section scripts {
     @*<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>*@
     <script>
+        window.addEventListener("pageshow", function (event) {
+            if (event.persisted || (window.performance && window.performance.navigation.type === 2)) {
+                window.location.reload();
+            }
+        });
+    </script>
+    <script>
         $(document).ready(function () {
             $('#reviewCourses').DataTable({
                 paging: true,
@@ -91,11 +99,16 @@ else
             $(".approve-btn").click(function () {
                 var id = $(this).data("id");
                 var approve = $(this).data("approve");
-
+                //console.log(typeof  id);
+                //console.log(typeof  approve);
                 $.ajax({
-                    url: '@Url.Action("UpdateApproval", "Advisor")',
-                    method: 'POST',
-                    data: { courseSelectionId: id, approve: approve },
+                    type: 'POST',
+                    url: `https://localhost:44335/api/AdvisorApi/UpdateApproval?courseSelectionId=${id}&approve=${approve}`,
+                    contentType: 'application/json',
+                    //data: JSON.stringify({  // UpdateApproval metodu POST old. için body içinde parametreler gönderilemedi url içinde gönderildi
+                    //    courseSelectionId: id,
+                    //    approve: approve
+                    //}),
                     success: function (res) {
                         if (res.success) {
                             location.reload();

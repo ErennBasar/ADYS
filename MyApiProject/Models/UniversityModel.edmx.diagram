@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="3.0" xmlns:edmx="http://schemas.microsoft.com/ado/2009/11/edmx">
+ <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
+  <edmx:Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
+    <!-- Diagram content (shape and connector positions) -->
+    <edmx:Diagrams>
+      <Diagram DiagramId="ae0dc8c7244d42be876ee7e3fc224eb3" Name="Diagram1">
+        <EntityTypeShape EntityType="ContextDBModel.C__MigrationHistory" Width="1.5" PointX="5.75" PointY="0.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="ContextDBModel.AdvisorAssignments" Width="1.5" PointX="3" PointY="4.625" IsExpanded="true" />
+        <EntityTypeShape EntityType="ContextDBModel.Courses" Width="1.5" PointX="6" PointY="4" IsExpanded="true" />
+        <EntityTypeShape EntityType="ContextDBModel.CourseSelections" Width="1.5" PointX="8.25" PointY="4.375" IsExpanded="true" />
+        <EntityTypeShape EntityType="ContextDBModel.Departments" Width="1.5" PointX="3.75" PointY="7.875" IsExpanded="true" />
+        <EntityTypeShape EntityType="ContextDBModel.Roles" Width="1.5" PointX="0.75" PointY="0.875" IsExpanded="true" />
+        <EntityTypeShape EntityType="ContextDBModel.Terms" Width="1.5" PointX="7.75" PointY="0.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="ContextDBModel.UserRoles" Width="1.5" PointX="3" PointY="1.625" IsExpanded="true" />
+        <EntityTypeShape EntityType="ContextDBModel.Users" Width="1.5" PointX="0.75" PointY="3.75" IsExpanded="true" />
+        <AssociationConnector Association="ContextDBModel.FK_dbo_AdvisorAssignments_dbo_Users_AdvisorId" ManuallyRouted="false" />
+        <AssociationConnector Association="ContextDBModel.FK_dbo_AdvisorAssignments_dbo_Users_StudentId" ManuallyRouted="false" />
+        <AssociationConnector Association="ContextDBModel.FK_dbo_Courses_dbo_Departments_DepartmentId" ManuallyRouted="false" />
+        <AssociationConnector Association="ContextDBModel.FK_dbo_Courses_dbo_Users_AdvisorId" ManuallyRouted="false" />
+        <AssociationConnector Association="ContextDBModel.FK_dbo_CourseSelections_dbo_Courses_CourseId" ManuallyRouted="false" />
+        <AssociationConnector Association="ContextDBModel.FK_dbo_CourseSelections_dbo_Users_StudentId" ManuallyRouted="false" />
+        <AssociationConnector Association="ContextDBModel.FK_dbo_UserRoles_dbo_Roles_RoleId" ManuallyRouted="false" />
+        <AssociationConnector Association="ContextDBModel.FK_dbo_UserRoles_dbo_Users_UserId" ManuallyRouted="false" />
+      </Diagram>
+    </edmx:Diagrams>
+  </edmx:Designer>
+</edmx:Edmx>

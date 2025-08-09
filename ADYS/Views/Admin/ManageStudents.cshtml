@@ -1,7 +1,8 @@
-﻿@model List<ADYS.ViewModels.StudentDashboardViewModel>
+﻿@*@model List<ADYS.ViewModels.StudentDashboardViewModel>*@
+@model List<MyApiProject.DTOs.StudentDashboardDto>
+
 @{
     ViewBag.Title = "Öğrenci Tanımlamaları";
-    Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
 <button class="btn btn-primary mb-3" id="openAddStudentModal">Yeni Öğrenci Ekle</button>
@@ -38,9 +39,15 @@
                                             data-advisor="@student.AdvisorName">
                                         Güncelle
                                     </button>
-                                    <a href="@Url.Action("DeleteStudent", "Admin", new { id = student.StudentId })"
-                                       class="btn btn-danger btn-sm"
-                                       onclick="return confirm('Öğrenciyi silmek istediğinize emin misiniz?');">Sil</a>
+                                    @*<a href="@Url.Action("DeleteStudent", "Admin", new { id = student.StudentId })"
+                                        class="btn btn-danger btn-sm"
+                                        onclick="return confirm('Öğrenciyi silmek istediğinize emin misiniz?');">Sil</a>*@
+
+                                    <button class="btn btn-danger btn-sm deleteStudentBtn"
+                                            data-id="@student.StudentId">
+                                        Sil
+                                    </button>
+
                                 </td>
                             </tr>
                         }
@@ -60,32 +67,32 @@
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body text-dark">
-                @using (Html.BeginForm("AddOrUpdateStudent", "Admin", FormMethod.Post, new { id = "studentForm" }))
-                {
-                    @Html.Hidden("StudentId", null, new { id = "StudentId" })
+                @*@using (Html.BeginForm("AddOrUpdateStudent", "Admin", FormMethod.Post, new { id = "studentForm" }))
+                    {*@
+                @Html.Hidden("StudentId", null, new { id = "StudentId" })
 
-                    <div class="form-group mb-3">
-                        @Html.Label("FullName", "Ad Soyad", new { @class = "form-label" })
-                        @Html.TextBox("FullName", null, new { @class = "form-control", required = "required", id = "FullName" })
-                    </div>
-                    <div class="form-group mb-3">
-                        @Html.Label("Email", "Email", new { @class = "form-label" })
-                        @Html.TextBox("Email", null, new { @class = "form-control", required = "required", id = "Email" })
-                    </div>
-                    <div class="form-group mb-3">
-                        @Html.Label("Password", "Şifre", new { @class = "form-label" })
-                        @Html.Password("Password", null, new { @class = "form-control", id = "Password" })
-                    </div>
-                    <div class="form-group mb-3">
-                        @Html.Label("AdvisorId", "Danışman", new { @class = "form-label" })
-                        @Html.DropDownList("AdvisorId", ViewBag.Advisors as SelectList, "Seçiniz", new { @class = "form-select", required = "required", id = "AdvisorId" })
-                    </div>
+                <div class="form-group mb-3">
+                    @Html.Label("FullName", "Ad Soyad", new { @class = "form-label" })
+                    @Html.TextBox("FullName", null, new { @class = "form-control", required = "required", id = "FullName" })
+                </div>
+                <div class="form-group mb-3">
+                    @Html.Label("Email", "Email", new { @class = "form-label" })
+                    @Html.TextBox("Email", null, new { @class = "form-control", required = "required", id = "Email" })
+                </div>
+                <div class="form-group mb-3">
+                    @Html.Label("Password", "Şifre", new { @class = "form-label" })
+                    @Html.Password("Password", null, new { @class = "form-control", id = "Password" })
+                </div>
+                <div class="form-group mb-3">
+                    @Html.Label("AdvisorId", "Danışman", new { @class = "form-label" })
+                    @Html.DropDownList("AdvisorId", ViewBag.Advisors as SelectList, "Seçiniz", new { @class = "form-select", required = "required", id = "AdvisorId" })
+                </div>
 
-                    <div class="text-end">
-                        <button type="submit" class="btn btn-success px-4">Kaydet</button>
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Kapat</button>
-                    </div>
-                }
+                <div class="text-end">
+                    <button type="button" class="btn btn-success px-4" id="saveStudentBtn">Kaydet</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Kapat</button>
+                </div>
+                @*}*@
             </div>
         </div>
     </div>
@@ -93,7 +100,15 @@
 
 @section scripts {
     <script>
+        window.addEventListener("pageshow", function (event) {
+            if (event.persisted || (window.performance && window.performance.navigation.type === 2)) {
+                window.location.reload();
+            }
+        });
+    </script>
+    <script>
         $(document).ready(function () {
+            // DataTable
             $('#viewStudents').DataTable({
                 paging: true,
                 searching: true,
@@ -103,13 +118,18 @@
                 }
             });
 
+            // Modal aç
             $('#openAddStudentModal').click(function () {
-                $('#studentForm')[0].reset();
                 $('#StudentId').val('');
+                $('#FullName').val('');
+                $('#Email').val('');
+                $('#Password').val('');
+                $('#AdvisorId').val('');
                 $('#studentModalLabel').text('Yeni Öğrenci Ekle');
                 $('#studentModal').modal('show');
             });
 
+            // Güncelle
             $('.editStudentBtn').click(function () {
                 $('#StudentId').val($(this).data('id'));
                 $('#FullName').val($(this).data('name'));
@@ -119,6 +139,76 @@
                 $('#studentModalLabel').text('Öğrenci Güncelle');
                 $('#studentModal').modal('show');
             });
+
+            // AJAX ile kaydet
+            $('#saveStudentBtn').click(function () {
+                const studentData = {
+                    StudentId: $('#StudentId').val() || null,
+                    FullName: $('#FullName').val(),
+                    Email: $('#Email').val(),
+                    Password: $('#Password').val(),
+                    AdvisorId: $('#AdvisorId').val()
+                };
+
+                $.ajax({
+                    url: 'https://localhost:44335/api/AdminApi/AddOrUpdateStudent',
+                    method: 'POST',
+                    contentType: 'application/json',
+                    data: JSON.stringify(studentData),
+                    success: function (res) {
+                        if (res.success) {
+                            location.reload();
+                        } else {
+                            alert("İşlem başarısız: " + res.message);
+                        }
+                    },
+                    error: function () {
+                        alert("Sunucu hatası oluştu.");
+                    }
+                });
+            });
         });
+    </script>
+    <script>
+        // Danışmanları çek
+        $.ajax({
+            url: "https://localhost:44335/api/AdminApi/GetAdvisors",
+            type: "GET",
+            success: function (data) {
+                $.each(data, function (i, item) {
+                    $('#advisorSelect').append($('<option>', {
+                        value: item.UserId,
+                        text: item.UserName
+                    }));
+                });
+            },
+            error: function () {
+                alert("Danışman listesi yüklenemedi.");
+            }
+        });
+
+    </script>
+    <script>
+        $('.deleteStudentBtn').click(function () {
+            if (!confirm("Öğrenciyi silmek istediğinize emin misiniz?")) return;
+
+            const studentId = $(this).data("id");
+
+            $.ajax({
+                url: 'https://localhost:44335/api/AdminApi/DeleteStudent/' + studentId,
+                type: 'DELETE',
+                success: function (res) {
+                    if (res.success) {
+                        location.reload();
+                    } else {
+                        alert("Silme işlemi başarısız.");
+                    }
+                },
+                error: function () {
+                    alert("Sunucu hatası oluştu.");
+                }
+            });
+        });
+
     </script>
 }

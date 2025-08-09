@@ -1,4 +1,6 @@
-﻿@model List<ADYS.Models.Department>
+﻿@*@model List<ADYS.Models.Department>*@
+@model List<MyApiProject.DTOs.DepartmentDto>
+
 @{
     ViewBag.Title = "Bölüm Tanımlamaları";
 }
@@ -32,7 +34,11 @@
                                             data-name="@department.DepartmentName">
                                         Güncelle
                                     </button>
-                                    @Html.ActionLink("Sil", "DeleteDepartment", "Admin", new { id = department.DepartmentId }, new { @class = "btn btn-sm", onclick = "return confirm('Silmek istediğinize emin misiniz?');" })
+                                    @*@Html.ActionLink("Sil", "DeleteDepartment", "Admin", new { id = department.DepartmentId }, new { @class = "btn btn-sm", onclick = "return confirm('Silmek istediğinize emin misiniz?');" })*@
+                                    <button class="btn btn-sm btn-danger deleteDepartmentBtn"
+                                            data-id="@department.DepartmentId">
+                                        Sil
+                                    </button>
                                 </td>
                             </tr>
                         }
@@ -51,26 +57,35 @@
                 <h5 class="modal-title" id="departmentModalLabel">Bölüm İşlemleri</h5>
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Kapat"></button>
             </div>
-            @using (Html.BeginForm("SaveDepartment", "Admin", FormMethod.Post))
+            @*@using (Html.BeginForm("SaveDepartment", "Admin", FormMethod.Post))*@
             {
-                <div class="modal-body">
-                    @Html.Hidden("DepartmentId", null, new { id = "DepartmentId" })
-
-                    <div class="mb-3">
-                        @Html.Label("DepartmentName", "Bölüm Adı", new { @class = "form-label text-white" })
-                        @Html.TextBox("DepartmentName", null, new { @class = "form-control", required = "required", id = "DepartmentName" })
-                    </div>
+            <div class="modal-body">
+                @*@Html.Hidden("DepartmentId", null, new { id = "DepartmentId" })*@
+                <input type="hidden" id="DepartmentId" />
+                <div class="mb-3">
+                    @*@Html.Label("DepartmentName", "Bölüm Adı", new { @class = "form-label text-white" })
+                        @Html.TextBox("DepartmentName", null, new { @class = "form-control", required = "required", id = "DepartmentName" })*@
+                    <label class="form-label text-white">Bölüm Adı</label>
+                    <input type="text" class="form-control" id="DepartmentName" required />
                 </div>
-                <div class="modal-footer">
-                    <button type="submit" class="btn btn-success" id="saveBtn">Kaydet</button>
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Kapat</button>
-                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="submit" class="btn btn-success" id="saveBtn">Kaydet</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Kapat</button>
+            </div>
             }
         </div>
     </div>
 </div>
 
 @section Scripts {
+    <script>
+        window.addEventListener("pageshow", function (event) {
+            if (event.persisted || (window.performance && window.performance.navigation.type === 2)) {
+                window.location.reload();
+            }
+        });
+    </script>
     <script>
         $(document).ready(function () {
             $('#viewDepartments').DataTable({
@@ -83,26 +98,84 @@
             });
         });
     </script>
-    <script>       
-            // Yeni Ekle Modal Aç
-            $('#openAddModal').click(function () {
-                $('#DepartmentId').val('');
-                $('#DepartmentName').val('');
-                $('#departmentModalLabel').text("Yeni Bölüm Ekle");
-                $('#saveBtn').text("Ekle").removeClass("btn-warning").addClass("btn-success");
-                $('#departmentModal').modal('show');
+    <script>
+        // Yeni Ekle Modal Aç
+        $('#openAddModal').click(function () {
+            $('#DepartmentId').val('');
+            $('#DepartmentName').val('');
+            $('#departmentModalLabel').text("Yeni Bölüm Ekle");
+            $('#saveBtn').text("Ekle").removeClass("btn-warning").addClass("btn-success");
+            $('#departmentModal').modal('show');
+        });
+
+        // Güncelle Modal Aç
+        $('.editDepartmentBtn').click(function () {
+            const id = $(this).data('id');
+            const name = $(this).data('name');
+
+            $('#DepartmentId').val(id);
+            $('#DepartmentName').val(name);
+            $('#departmentModalLabel').text("Bölüm Güncelle");
+            $('#saveBtn').text("Güncelle").removeClass("btn-success").addClass("btn-warning");
+            $('#departmentModal').modal('show');
+        });
+        $('#saveBtn').click(function () {
+            const departmentData = {
+                DepartmentId: $('#DepartmentId').val() || null,
+                DepartmentName: $('#DepartmentName').val()
+            };
+
+            $.ajax({
+                url: 'https://localhost:44335/api/AdminApi/CreateOrUpdateDepartment',
+                type: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify(departmentData),
+                success: function (res) {
+                    if (res.success) {
+                        alert(res.message);
+                        location.reload();
+                    } else {
+                        alert("İşlem başarısız: " + res.message);
+                    }
+                },
+                error: function () {
+                    Swal.fire('Hata!', 'Sunucu hatası oluştu.', 'error');
+                }
             });
+        });
 
-            // Güncelle Modal Aç
-            $('.editDepartmentBtn').click(function () {
-                const id = $(this).data('id');
-                const name = $(this).data('name');
+        $('.deleteDepartmentBtn').click(function () {
+            const id = $(this).data('id');
 
-                $('#DepartmentId').val(id);
-                $('#DepartmentName').val(name);
-                $('#departmentModalLabel').text("Bölüm Güncelle");
-                $('#saveBtn').text("Güncelle").removeClass("btn-success").addClass("btn-warning");
-                $('#departmentModal').modal('show');
-            });        
+            Swal.fire({
+                title: 'Emin misiniz?',
+                text: "Bu bölümü silmek istediğinize emin misiniz?",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#3085d6',
+                confirmButtonText: 'Evet, sil!',
+                cancelButtonText: 'Vazgeç'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    $.ajax({
+                        url: 'https://localhost:44335/api/AdminApi/DeleteDepartment?advisorId=${advisorId}',
+                        type: 'DELETE',
+                        success: function (res) {
+                            if (res.success) {
+                                Swal.fire('Silindi!', res.message, 'success').then(() => {
+                                    location.reload();
+                                });
+                            } else {
+                                Swal.fire('Hata!', res.message, 'error');
+                            }
+                        },
+                        error: function () {
+                            Swal.fire('Hata!', 'Silme işlemi sırasında bir hata oluştu.', 'error');
+                        }
+                    });
+                }
+            });
+        });
     </script>
 }

@@ -1,0 +1,608 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="3.0" xmlns:edmx="http://schemas.microsoft.com/ado/2009/11/edmx">
+  <!-- EF Runtime content -->
+  <edmx:Runtime>
+    <!-- SSDL content -->
+    <edmx:StorageModels>
+    <Schema Namespace="ContextDBModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+        <EntityType Name="__MigrationHistory">
+          <Key>
+            <PropertyRef Name="MigrationId" />
+            <PropertyRef Name="ContextKey" />
+          </Key>
+          <Property Name="MigrationId" Type="nvarchar" MaxLength="150" Nullable="false" />
+          <Property Name="ContextKey" Type="nvarchar" MaxLength="300" Nullable="false" />
+          <Property Name="Model" Type="varbinary(max)" Nullable="false" />
+          <Property Name="ProductVersion" Type="nvarchar" MaxLength="32" Nullable="false" />
+        </EntityType>
+        <EntityType Name="AdvisorAssignments">
+          <Key>
+            <PropertyRef Name="AdvisorAssignmentId" />
+          </Key>
+          <Property Name="AdvisorAssignmentId" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="StudentId" Type="int" Nullable="false" />
+          <Property Name="AdvisorId" Type="int" Nullable="false" />
+        </EntityType>
+        <EntityType Name="Courses">
+          <Key>
+            <PropertyRef Name="CourseId" />
+          </Key>
+          <Property Name="CourseId" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="CourseName" Type="nvarchar(max)" />
+          <Property Name="AKTS" Type="int" Nullable="false" />
+          <Property Name="Kontenjan" Type="int" Nullable="false" />
+          <Property Name="AdvisorId" Type="int" Nullable="false" />
+          <Property Name="DepartmentId" Type="int" Nullable="false" />
+          <Property Name="DayOfWeek" Type="nvarchar(max)" />
+          <Property Name="StartTime" Type="time" Precision="7" Nullable="false" />
+          <Property Name="EndTime" Type="time" Precision="7" Nullable="false" />
+        </EntityType>
+        <EntityType Name="CourseSelections">
+          <Key>
+            <PropertyRef Name="CourseSelectionId" />
+          </Key>
+          <Property Name="CourseSelectionId" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="StudentId" Type="int" Nullable="false" />
+          <Property Name="CourseId" Type="int" Nullable="false" />
+          <Property Name="IsApprovedByAdvisor" Type="bit" />
+        </EntityType>
+        <EntityType Name="Departments">
+          <Key>
+            <PropertyRef Name="DepartmentId" />
+          </Key>
+          <Property Name="DepartmentId" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="DepartmentName" Type="nvarchar(max)" Nullable="false" />
+        </EntityType>
+        <EntityType Name="Roles">
+          <Key>
+            <PropertyRef Name="RoleId" />
+          </Key>
+          <Property Name="RoleId" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="RoleName" Type="nvarchar(max)" />
+        </EntityType>
+        <EntityType Name="Terms">
+          <Key>
+            <PropertyRef Name="TermId" />
+          </Key>
+          <Property Name="TermId" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="TermName" Type="nvarchar(max)" Nullable="false" />
+          <Property Name="IsActive" Type="bit" Nullable="false" />
+          <Property Name="CourseSelectionStart" Type="datetime" />
+          <Property Name="CourseSelectionEnd" Type="datetime" />
+        </EntityType>
+        <EntityType Name="UserRoles">
+          <Key>
+            <PropertyRef Name="UserRoleId" />
+          </Key>
+          <Property Name="UserRoleId" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="UserId" Type="int" Nullable="false" />
+          <Property Name="RoleId" Type="int" Nullable="false" />
+        </EntityType>
+        <EntityType Name="Users">
+          <Key>
+            <PropertyRef Name="UserId" />
+          </Key>
+          <Property Name="UserId" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="UserName" Type="nvarchar(max)" />
+          <Property Name="Email" Type="nvarchar(max)" />
+          <Property Name="Password" Type="nvarchar(max)" />
+          <Property Name="IsActive" Type="bit" Nullable="false" />
+          <Property Name="IsDeleted" Type="bit" Nullable="false" />
+          <Property Name="DeleteDate" Type="datetime" />
+          <Property Name="CreateDate" Type="datetime" Nullable="false" />
+          <Property Name="UpdateDate" Type="datetime" />
+        </EntityType>
+        <Association Name="FK_dbo_AdvisorAssignments_dbo_Users_AdvisorId">
+          <End Role="Users" Type="Self.Users" Multiplicity="1" />
+          <End Role="AdvisorAssignments" Type="Self.AdvisorAssignments" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Users">
+              <PropertyRef Name="UserId" />
+            </Principal>
+            <Dependent Role="AdvisorAssignments">
+              <PropertyRef Name="AdvisorId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_dbo_AdvisorAssignments_dbo_Users_StudentId">
+          <End Role="Users" Type="Self.Users" Multiplicity="1" />
+          <End Role="AdvisorAssignments" Type="Self.AdvisorAssignments" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Users">
+              <PropertyRef Name="UserId" />
+            </Principal>
+            <Dependent Role="AdvisorAssignments">
+              <PropertyRef Name="StudentId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_dbo_Courses_dbo_Departments_DepartmentId">
+          <End Role="Departments" Type="Self.Departments" Multiplicity="1" />
+          <End Role="Courses" Type="Self.Courses" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Departments">
+              <PropertyRef Name="DepartmentId" />
+            </Principal>
+            <Dependent Role="Courses">
+              <PropertyRef Name="DepartmentId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_dbo_Courses_dbo_Users_AdvisorId">
+          <End Role="Users" Type="Self.Users" Multiplicity="1" />
+          <End Role="Courses" Type="Self.Courses" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Users">
+              <PropertyRef Name="UserId" />
+            </Principal>
+            <Dependent Role="Courses">
+              <PropertyRef Name="AdvisorId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_dbo_CourseSelections_dbo_Courses_CourseId">
+          <End Role="Courses" Type="Self.Courses" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Role="CourseSelections" Type="Self.CourseSelections" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Courses">
+              <PropertyRef Name="CourseId" />
+            </Principal>
+            <Dependent Role="CourseSelections">
+              <PropertyRef Name="CourseId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_dbo_CourseSelections_dbo_Users_StudentId">
+          <End Role="Users" Type="Self.Users" Multiplicity="1" />
+          <End Role="CourseSelections" Type="Self.CourseSelections" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Users">
+              <PropertyRef Name="UserId" />
+            </Principal>
+            <Dependent Role="CourseSelections">
+              <PropertyRef Name="StudentId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_dbo_UserRoles_dbo_Roles_RoleId">
+          <End Role="Roles" Type="Self.Roles" Multiplicity="1" />
+          <End Role="UserRoles" Type="Self.UserRoles" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Roles">
+              <PropertyRef Name="RoleId" />
+            </Principal>
+            <Dependent Role="UserRoles">
+              <PropertyRef Name="RoleId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_dbo_UserRoles_dbo_Users_UserId">
+          <End Role="Users" Type="Self.Users" Multiplicity="1" />
+          <End Role="UserRoles" Type="Self.UserRoles" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Users">
+              <PropertyRef Name="UserId" />
+            </Principal>
+            <Dependent Role="UserRoles">
+              <PropertyRef Name="UserId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityContainer Name="ContextDBModelStoreContainer">
+          <EntitySet Name="__MigrationHistory" EntityType="Self.__MigrationHistory" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="AdvisorAssignments" EntityType="Self.AdvisorAssignments" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Courses" EntityType="Self.Courses" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="CourseSelections" EntityType="Self.CourseSelections" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Departments" EntityType="Self.Departments" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Roles" EntityType="Self.Roles" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Terms" EntityType="Self.Terms" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="UserRoles" EntityType="Self.UserRoles" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Users" EntityType="Self.Users" Schema="dbo" store:Type="Tables" />
+          <AssociationSet Name="FK_dbo_AdvisorAssignments_dbo_Users_AdvisorId" Association="Self.FK_dbo_AdvisorAssignments_dbo_Users_AdvisorId">
+            <End Role="Users" EntitySet="Users" />
+            <End Role="AdvisorAssignments" EntitySet="AdvisorAssignments" />
+          </AssociationSet>
+          <AssociationSet Name="FK_dbo_AdvisorAssignments_dbo_Users_StudentId" Association="Self.FK_dbo_AdvisorAssignments_dbo_Users_StudentId">
+            <End Role="Users" EntitySet="Users" />
+            <End Role="AdvisorAssignments" EntitySet="AdvisorAssignments" />
+          </AssociationSet>
+          <AssociationSet Name="FK_dbo_Courses_dbo_Departments_DepartmentId" Association="Self.FK_dbo_Courses_dbo_Departments_DepartmentId">
+            <End Role="Departments" EntitySet="Departments" />
+            <End Role="Courses" EntitySet="Courses" />
+          </AssociationSet>
+          <AssociationSet Name="FK_dbo_Courses_dbo_Users_AdvisorId" Association="Self.FK_dbo_Courses_dbo_Users_AdvisorId">
+            <End Role="Users" EntitySet="Users" />
+            <End Role="Courses" EntitySet="Courses" />
+          </AssociationSet>
+          <AssociationSet Name="FK_dbo_CourseSelections_dbo_Courses_CourseId" Association="Self.FK_dbo_CourseSelections_dbo_Courses_CourseId">
+            <End Role="Courses" EntitySet="Courses" />
+            <End Role="CourseSelections" EntitySet="CourseSelections" />
+          </AssociationSet>
+          <AssociationSet Name="FK_dbo_CourseSelections_dbo_Users_StudentId" Association="Self.FK_dbo_CourseSelections_dbo_Users_StudentId">
+            <End Role="Users" EntitySet="Users" />
+            <End Role="CourseSelections" EntitySet="CourseSelections" />
+          </AssociationSet>
+          <AssociationSet Name="FK_dbo_UserRoles_dbo_Roles_RoleId" Association="Self.FK_dbo_UserRoles_dbo_Roles_RoleId">
+            <End Role="Roles" EntitySet="Roles" />
+            <End Role="UserRoles" EntitySet="UserRoles" />
+          </AssociationSet>
+          <AssociationSet Name="FK_dbo_UserRoles_dbo_Users_UserId" Association="Self.FK_dbo_UserRoles_dbo_Users_UserId">
+            <End Role="Users" EntitySet="Users" />
+            <End Role="UserRoles" EntitySet="UserRoles" />
+          </AssociationSet>
+        </EntityContainer>
+      </Schema></edmx:StorageModels>
+    <!-- CSDL content -->
+    <edmx:ConceptualModels>
+      <Schema Namespace="ContextDBModel" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
+        <EntityType Name="C__MigrationHistory">
+          <Key>
+            <PropertyRef Name="MigrationId" />
+            <PropertyRef Name="ContextKey" />
+          </Key>
+          <Property Name="MigrationId" Type="String" MaxLength="150" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="ContextKey" Type="String" MaxLength="300" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="Model" Type="Binary" MaxLength="Max" FixedLength="false" Nullable="false" />
+          <Property Name="ProductVersion" Type="String" MaxLength="32" FixedLength="false" Unicode="true" Nullable="false" />
+        </EntityType>
+        <EntityType Name="AdvisorAssignments">
+          <Key>
+            <PropertyRef Name="AdvisorAssignmentId" />
+          </Key>
+          <Property Name="AdvisorAssignmentId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="StudentId" Type="Int32" Nullable="false" />
+          <Property Name="AdvisorId" Type="Int32" Nullable="false" />
+          <NavigationProperty Name="Advisor" Relationship="Self.FK_dbo_AdvisorAssignments_dbo_Users_AdvisorId" FromRole="AdvisorAssignments" ToRole="Users" />
+          <NavigationProperty Name="Student" Relationship="Self.FK_dbo_AdvisorAssignments_dbo_Users_StudentId" FromRole="AdvisorAssignments" ToRole="Users" />
+        </EntityType>
+        <EntityType Name="Courses">
+          <Key>
+            <PropertyRef Name="CourseId" />
+          </Key>
+          <Property Name="CourseId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="CourseName" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="AKTS" Type="Int32" Nullable="false" />
+          <Property Name="Kontenjan" Type="Int32" Nullable="false" />
+          <Property Name="AdvisorId" Type="Int32" Nullable="false" />
+          <Property Name="DepartmentId" Type="Int32" Nullable="false" />
+          <Property Name="DayOfWeek" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="StartTime" Type="Time" Nullable="false" Precision="7" />
+          <Property Name="EndTime" Type="Time" Nullable="false" Precision="7" />
+          <NavigationProperty Name="Departments" Relationship="Self.FK_dbo_Courses_dbo_Departments_DepartmentId" FromRole="Courses" ToRole="Departments" />
+          <NavigationProperty Name="Users" Relationship="Self.FK_dbo_Courses_dbo_Users_AdvisorId" FromRole="Courses" ToRole="Users" />
+          <NavigationProperty Name="CourseSelections" Relationship="Self.FK_dbo_CourseSelections_dbo_Courses_CourseId" FromRole="Courses" ToRole="CourseSelections" />
+        </EntityType>
+        <EntityType Name="CourseSelections">
+          <Key>
+            <PropertyRef Name="CourseSelectionId" />
+          </Key>
+          <Property Name="CourseSelectionId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="StudentId" Type="Int32" Nullable="false" />
+          <Property Name="CourseId" Type="Int32" Nullable="false" />
+          <Property Name="IsApprovedByAdvisor" Type="Boolean" />
+          <NavigationProperty Name="Courses" Relationship="Self.FK_dbo_CourseSelections_dbo_Courses_CourseId" FromRole="CourseSelections" ToRole="Courses" />
+          <NavigationProperty Name="Users" Relationship="Self.FK_dbo_CourseSelections_dbo_Users_StudentId" FromRole="CourseSelections" ToRole="Users" />
+        </EntityType>
+        <EntityType Name="Departments">
+          <Key>
+            <PropertyRef Name="DepartmentId" />
+          </Key>
+          <Property Name="DepartmentId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="DepartmentName" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" Nullable="false" />
+          <NavigationProperty Name="Courses" Relationship="Self.FK_dbo_Courses_dbo_Departments_DepartmentId" FromRole="Departments" ToRole="Courses" />
+        </EntityType>
+        <EntityType Name="Roles">
+          <Key>
+            <PropertyRef Name="RoleId" />
+          </Key>
+          <Property Name="RoleId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="RoleName" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <NavigationProperty Name="UserRoles" Relationship="Self.FK_dbo_UserRoles_dbo_Roles_RoleId" FromRole="Roles" ToRole="UserRoles" />
+        </EntityType>
+        <EntityType Name="Terms">
+          <Key>
+            <PropertyRef Name="TermId" />
+          </Key>
+          <Property Name="TermId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="TermName" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="IsActive" Type="Boolean" Nullable="false" />
+          <Property Name="CourseSelectionStart" Type="DateTime" Precision="3" />
+          <Property Name="CourseSelectionEnd" Type="DateTime" Precision="3" />
+        </EntityType>
+        <EntityType Name="UserRoles">
+          <Key>
+            <PropertyRef Name="UserRoleId" />
+          </Key>
+          <Property Name="UserRoleId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="UserId" Type="Int32" Nullable="false" />
+          <Property Name="RoleId" Type="Int32" Nullable="false" />
+          <NavigationProperty Name="Roles" Relationship="Self.FK_dbo_UserRoles_dbo_Roles_RoleId" FromRole="UserRoles" ToRole="Roles" />
+          <NavigationProperty Name="Users" Relationship="Self.FK_dbo_UserRoles_dbo_Users_UserId" FromRole="UserRoles" ToRole="Users" />
+        </EntityType>
+        <EntityType Name="Users">
+          <Key>
+            <PropertyRef Name="UserId" />
+          </Key>
+          <Property Name="UserId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="UserName" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="Email" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="Password" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="IsActive" Type="Boolean" Nullable="false" />
+          <Property Name="IsDeleted" Type="Boolean" Nullable="false" />
+          <Property Name="DeleteDate" Type="DateTime" Precision="3" />
+          <Property Name="CreateDate" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="UpdateDate" Type="DateTime" Precision="3" />
+          <NavigationProperty Name="AdvisorAssignments" Relationship="Self.FK_dbo_AdvisorAssignments_dbo_Users_AdvisorId" FromRole="Users" ToRole="AdvisorAssignments" />
+          <NavigationProperty Name="AdvisorAssignments1" Relationship="Self.FK_dbo_AdvisorAssignments_dbo_Users_StudentId" FromRole="Users" ToRole="AdvisorAssignments" />
+          <NavigationProperty Name="Courses" Relationship="Self.FK_dbo_Courses_dbo_Users_AdvisorId" FromRole="Users" ToRole="Courses" />
+          <NavigationProperty Name="CourseSelections" Relationship="Self.FK_dbo_CourseSelections_dbo_Users_StudentId" FromRole="Users" ToRole="CourseSelections" />
+          <NavigationProperty Name="UserRoles" Relationship="Self.FK_dbo_UserRoles_dbo_Users_UserId" FromRole="Users" ToRole="UserRoles" />
+        </EntityType>
+        <Association Name="FK_dbo_AdvisorAssignments_dbo_Users_AdvisorId">
+          <End Role="Users" Type="Self.Users" Multiplicity="1" />
+          <End Role="AdvisorAssignments" Type="Self.AdvisorAssignments" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Users">
+              <PropertyRef Name="UserId" />
+            </Principal>
+            <Dependent Role="AdvisorAssignments">
+              <PropertyRef Name="AdvisorId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_dbo_AdvisorAssignments_dbo_Users_StudentId">
+          <End Role="Users" Type="Self.Users" Multiplicity="1" />
+          <End Role="AdvisorAssignments" Type="Self.AdvisorAssignments" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Users">
+              <PropertyRef Name="UserId" />
+            </Principal>
+            <Dependent Role="AdvisorAssignments">
+              <PropertyRef Name="StudentId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_dbo_Courses_dbo_Departments_DepartmentId">
+          <End Role="Departments" Type="Self.Departments" Multiplicity="1" />
+          <End Role="Courses" Type="Self.Courses" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Departments">
+              <PropertyRef Name="DepartmentId" />
+            </Principal>
+            <Dependent Role="Courses">
+              <PropertyRef Name="DepartmentId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_dbo_Courses_dbo_Users_AdvisorId">
+          <End Role="Users" Type="Self.Users" Multiplicity="1" />
+          <End Role="Courses" Type="Self.Courses" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Users">
+              <PropertyRef Name="UserId" />
+            </Principal>
+            <Dependent Role="Courses">
+              <PropertyRef Name="AdvisorId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_dbo_CourseSelections_dbo_Courses_CourseId">
+          <End Role="Courses" Type="Self.Courses" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Role="CourseSelections" Type="Self.CourseSelections" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Courses">
+              <PropertyRef Name="CourseId" />
+            </Principal>
+            <Dependent Role="CourseSelections">
+              <PropertyRef Name="CourseId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_dbo_CourseSelections_dbo_Users_StudentId">
+          <End Role="Users" Type="Self.Users" Multiplicity="1" />
+          <End Role="CourseSelections" Type="Self.CourseSelections" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Users">
+              <PropertyRef Name="UserId" />
+            </Principal>
+            <Dependent Role="CourseSelections">
+              <PropertyRef Name="StudentId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_dbo_UserRoles_dbo_Roles_RoleId">
+          <End Role="Roles" Type="Self.Roles" Multiplicity="1" />
+          <End Role="UserRoles" Type="Self.UserRoles" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Roles">
+              <PropertyRef Name="RoleId" />
+            </Principal>
+            <Dependent Role="UserRoles">
+              <PropertyRef Name="RoleId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_dbo_UserRoles_dbo_Users_UserId">
+          <End Role="Users" Type="Self.Users" Multiplicity="1" />
+          <End Role="UserRoles" Type="Self.UserRoles" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Users">
+              <PropertyRef Name="UserId" />
+            </Principal>
+            <Dependent Role="UserRoles">
+              <PropertyRef Name="UserId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityContainer Name="ContextDBEntities" annotation:LazyLoadingEnabled="true">
+          <EntitySet Name="C__MigrationHistory" EntityType="Self.C__MigrationHistory" />
+          <EntitySet Name="AdvisorAssignments" EntityType="Self.AdvisorAssignments" />
+          <EntitySet Name="Courses" EntityType="Self.Courses" />
+          <EntitySet Name="CourseSelections" EntityType="Self.CourseSelections" />
+          <EntitySet Name="Departments" EntityType="Self.Departments" />
+          <EntitySet Name="Roles" EntityType="Self.Roles" />
+          <EntitySet Name="Terms" EntityType="Self.Terms" />
+          <EntitySet Name="UserRoles" EntityType="Self.UserRoles" />
+          <EntitySet Name="Users" EntityType="Self.Users" />
+          <AssociationSet Name="FK_dbo_AdvisorAssignments_dbo_Users_AdvisorId" Association="Self.FK_dbo_AdvisorAssignments_dbo_Users_AdvisorId">
+            <End Role="Users" EntitySet="Users" />
+            <End Role="AdvisorAssignments" EntitySet="AdvisorAssignments" />
+          </AssociationSet>
+          <AssociationSet Name="FK_dbo_AdvisorAssignments_dbo_Users_StudentId" Association="Self.FK_dbo_AdvisorAssignments_dbo_Users_StudentId">
+            <End Role="Users" EntitySet="Users" />
+            <End Role="AdvisorAssignments" EntitySet="AdvisorAssignments" />
+          </AssociationSet>
+          <AssociationSet Name="FK_dbo_Courses_dbo_Departments_DepartmentId" Association="Self.FK_dbo_Courses_dbo_Departments_DepartmentId">
+            <End Role="Departments" EntitySet="Departments" />
+            <End Role="Courses" EntitySet="Courses" />
+          </AssociationSet>
+          <AssociationSet Name="FK_dbo_Courses_dbo_Users_AdvisorId" Association="Self.FK_dbo_Courses_dbo_Users_AdvisorId">
+            <End Role="Users" EntitySet="Users" />
+            <End Role="Courses" EntitySet="Courses" />
+          </AssociationSet>
+          <AssociationSet Name="FK_dbo_CourseSelections_dbo_Courses_CourseId" Association="Self.FK_dbo_CourseSelections_dbo_Courses_CourseId">
+            <End Role="Courses" EntitySet="Courses" />
+            <End Role="CourseSelections" EntitySet="CourseSelections" />
+          </AssociationSet>
+          <AssociationSet Name="FK_dbo_CourseSelections_dbo_Users_StudentId" Association="Self.FK_dbo_CourseSelections_dbo_Users_StudentId">
+            <End Role="Users" EntitySet="Users" />
+            <End Role="CourseSelections" EntitySet="CourseSelections" />
+          </AssociationSet>
+          <AssociationSet Name="FK_dbo_UserRoles_dbo_Roles_RoleId" Association="Self.FK_dbo_UserRoles_dbo_Roles_RoleId">
+            <End Role="Roles" EntitySet="Roles" />
+            <End Role="UserRoles" EntitySet="UserRoles" />
+          </AssociationSet>
+          <AssociationSet Name="FK_dbo_UserRoles_dbo_Users_UserId" Association="Self.FK_dbo_UserRoles_dbo_Users_UserId">
+            <End Role="Users" EntitySet="Users" />
+            <End Role="UserRoles" EntitySet="UserRoles" />
+          </AssociationSet>
+        </EntityContainer>
+      </Schema>
+    </edmx:ConceptualModels>
+    <!-- C-S mapping content -->
+    <edmx:Mappings>
+      <Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2009/11/mapping/cs">
+        <EntityContainerMapping StorageEntityContainer="ContextDBModelStoreContainer" CdmEntityContainer="ContextDBEntities">
+          <EntitySetMapping Name="C__MigrationHistory">
+            <EntityTypeMapping TypeName="ContextDBModel.C__MigrationHistory">
+              <MappingFragment StoreEntitySet="__MigrationHistory">
+                <ScalarProperty Name="MigrationId" ColumnName="MigrationId" />
+                <ScalarProperty Name="ContextKey" ColumnName="ContextKey" />
+                <ScalarProperty Name="Model" ColumnName="Model" />
+                <ScalarProperty Name="ProductVersion" ColumnName="ProductVersion" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="AdvisorAssignments">
+            <EntityTypeMapping TypeName="ContextDBModel.AdvisorAssignments">
+              <MappingFragment StoreEntitySet="AdvisorAssignments">
+                <ScalarProperty Name="AdvisorAssignmentId" ColumnName="AdvisorAssignmentId" />
+                <ScalarProperty Name="StudentId" ColumnName="StudentId" />
+                <ScalarProperty Name="AdvisorId" ColumnName="AdvisorId" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Courses">
+            <EntityTypeMapping TypeName="ContextDBModel.Courses">
+              <MappingFragment StoreEntitySet="Courses">
+                <ScalarProperty Name="CourseId" ColumnName="CourseId" />
+                <ScalarProperty Name="CourseName" ColumnName="CourseName" />
+                <ScalarProperty Name="AKTS" ColumnName="AKTS" />
+                <ScalarProperty Name="Kontenjan" ColumnName="Kontenjan" />
+                <ScalarProperty Name="AdvisorId" ColumnName="AdvisorId" />
+                <ScalarProperty Name="DepartmentId" ColumnName="DepartmentId" />
+                <ScalarProperty Name="DayOfWeek" ColumnName="DayOfWeek" />
+                <ScalarProperty Name="StartTime" ColumnName="StartTime" />
+                <ScalarProperty Name="EndTime" ColumnName="EndTime" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="CourseSelections">
+            <EntityTypeMapping TypeName="ContextDBModel.CourseSelections">
+              <MappingFragment StoreEntitySet="CourseSelections">
+                <ScalarProperty Name="CourseSelectionId" ColumnName="CourseSelectionId" />
+                <ScalarProperty Name="StudentId" ColumnName="StudentId" />
+                <ScalarProperty Name="CourseId" ColumnName="CourseId" />
+                <ScalarProperty Name="IsApprovedByAdvisor" ColumnName="IsApprovedByAdvisor" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Departments">
+            <EntityTypeMapping TypeName="ContextDBModel.Departments">
+              <MappingFragment StoreEntitySet="Departments">
+                <ScalarProperty Name="DepartmentId" ColumnName="DepartmentId" />
+                <ScalarProperty Name="DepartmentName" ColumnName="DepartmentName" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Roles">
+            <EntityTypeMapping TypeName="ContextDBModel.Roles">
+              <MappingFragment StoreEntitySet="Roles">
+                <ScalarProperty Name="RoleId" ColumnName="RoleId" />
+                <ScalarProperty Name="RoleName" ColumnName="RoleName" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Terms">
+            <EntityTypeMapping TypeName="ContextDBModel.Terms">
+              <MappingFragment StoreEntitySet="Terms">
+                <ScalarProperty Name="TermId" ColumnName="TermId" />
+                <ScalarProperty Name="TermName" ColumnName="TermName" />
+                <ScalarProperty Name="IsActive" ColumnName="IsActive" />
+                <ScalarProperty Name="CourseSelectionStart" ColumnName="CourseSelectionStart" />
+                <ScalarProperty Name="CourseSelectionEnd" ColumnName="CourseSelectionEnd" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="UserRoles">
+            <EntityTypeMapping TypeName="ContextDBModel.UserRoles">
+              <MappingFragment StoreEntitySet="UserRoles">
+                <ScalarProperty Name="UserRoleId" ColumnName="UserRoleId" />
+                <ScalarProperty Name="UserId" ColumnName="UserId" />
+                <ScalarProperty Name="RoleId" ColumnName="RoleId" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Users">
+            <EntityTypeMapping TypeName="ContextDBModel.Users">
+              <MappingFragment StoreEntitySet="Users">
+                <ScalarProperty Name="UserId" ColumnName="UserId" />
+                <ScalarProperty Name="UserName" ColumnName="UserName" />
+                <ScalarProperty Name="Email" ColumnName="Email" />
+                <ScalarProperty Name="Password" ColumnName="Password" />
+                <ScalarProperty Name="IsActive" ColumnName="IsActive" />
+                <ScalarProperty Name="IsDeleted" ColumnName="IsDeleted" />
+                <ScalarProperty Name="DeleteDate" ColumnName="DeleteDate" />
+                <ScalarProperty Name="CreateDate" ColumnName="CreateDate" />
+                <ScalarProperty Name="UpdateDate" ColumnName="UpdateDate" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+        </EntityContainerMapping>
+      </Mapping>
+    </edmx:Mappings>
+  </edmx:Runtime>
+  <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
+  <Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
+    <Connection>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="MetadataArtifactProcessing" Value="EmbedInOutputAssembly" />
+      </DesignerInfoPropertySet>
+    </Connection>
+    <Options>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="ValidateOnBuild" Value="true" />
+        <DesignerProperty Name="EnablePluralization" Value="false" />
+        <DesignerProperty Name="IncludeForeignKeysInModel" Value="true" />
+        <DesignerProperty Name="UseLegacyProvider" Value="false" />
+        <DesignerProperty Name="CodeGenerationStrategy" Value="None" />
+      </DesignerInfoPropertySet>
+    </Options>
+    <!-- Diagram content (shape and connector positions) -->
+    <Diagrams></Diagrams>
+  </Designer>
+</edmx:Edmx>

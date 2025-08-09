@@ -1,5 +1,6 @@
-﻿using System.Web;
-using System.Web.Mvc;
+﻿using System.Web.Mvc;
+using ADYS.Filters;
+
 
 namespace ADYS
 {
@@ -8,6 +9,7 @@ namespace ADYS
         public static void RegisterGlobalFilters(GlobalFilterCollection filters)
         {
             filters.Add(new HandleErrorAttribute());
+            filters.Add(new NoCacheAttribute()); //global olarak tanımlandı
         }
     }
 }

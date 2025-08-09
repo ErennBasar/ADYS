@@ -1,4 +1,6 @@
-﻿@model List<ADYS.Models.User>
+﻿@*@model List<ADYS.Models.User>*@
+@model List<MyApiProject.DTOs.AdvisorDto>
+
 
 @{
     ViewBag.Title = "Danışman Tanımlamaları";
@@ -60,28 +62,29 @@
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Kapat"></button>
             </div>
             <div class="modal-body text-dark">
-                @using (Html.BeginForm("CreateOrUpdateAdvisor", "Admin", FormMethod.Post, new { id = "advisorForm" }))
-                {
-                    @Html.Hidden("AdvisorId", null, new { id = "AdvisorId" })
+                @*@using (Html.BeginForm("CreateOrUpdateAdvisor", "Admin", FormMethod.Post, new { id = "advisorForm" }))*@
 
-                    <div class="form-group mb-3">
-                        @Html.Label("UserName", "Ad Soyad", new { @class = "form-label" })
-                        @Html.TextBox("UserName", null, new { @class = "form-control", required = "required", id = "UserName" })
-                    </div>
-                    <div class="form-group mb-3">
-                        @Html.Label("Email", "Email", new { @class = "form-label" })
-                        @Html.TextBox("Email", null, new { @class = "form-control", type = "email", required = "required", id = "Email" })
-                    </div>
-                    <div class="form-group mb-3">
-                        @Html.Label("Password", "Şifre", new { @class = "form-label" })
-                        @Html.Password("Password", null, new { @class = "form-control", id = "Password" })
-                    </div>
 
-                    <div class="text-end">
-                        <button type="submit" class="btn btn-success px-4">Kaydet</button>
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Kapat</button>
-                    </div>
-                }
+                @Html.Hidden("AdvisorId", null, new { id = "AdvisorId" })
+
+                <div class="form-group mb-3">
+                    @Html.Label("UserName", "Ad Soyad", new { @class = "form-label" })
+                    @Html.TextBox("UserName", null, new { @class = "form-control", required = "required", id = "UserName" })
+                </div>
+                <div class="form-group mb-3">
+                    @Html.Label("Email", "Email", new { @class = "form-label" })
+                    @Html.TextBox("Email", null, new { @class = "form-control", type = "email", required = "required", id = "Email" })
+                </div>
+                <div class="form-group mb-3">
+                    @Html.Label("Password", "Şifre", new { @class = "form-label" })
+                    @Html.Password("Password", null, new { @class = "form-control", id = "Password" })
+                </div>
+
+                <div class="text-end">
+                    <button type="submit" class="btn btn-success px-4" id="saveAdvisorBtn">Kaydet</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Kapat</button>
+                </div>
+
             </div>
         </div>
     </div>
@@ -89,11 +92,18 @@
 
 
 @section Scripts {
+    <script>
+        window.addEventListener("pageshow", function (event) {
+            if (event.persisted || (window.performance && window.performance.navigation.type === 2)) {
+                window.location.reload();
+            }
+        });
+    </script>
 
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
     <script>
-        $(document).ready(function () {
+        $(document).ready(function () {0
             $('#viewAdvisors').DataTable({
                 paging: true,
                 searching: true,
@@ -105,10 +115,12 @@
 
             // Yeni ekle
             $('#openAddAdvisorModal').click(function () {
-                $('#advisorForm')[0].reset();
+                /*$('#advisorForm')[0].reset();*/
                 $('#AdvisorId').val('');
-                $('#advisorModalLabel').text('Yeni Danışman Ekle');
+                $('#UserName').val('');
+                $('#Email').val('');
                 $('#Password').attr('required', true); // sadece eklemede
+                $('#advisorModalLabel').text('Yeni Danışman Ekle');
                 $('#advisorModal').modal('show');
             });
 
@@ -117,46 +129,73 @@
                 $('#AdvisorId').val($(this).data('id'));
                 $('#UserName').val($(this).data('name'));
                 $('#Email').val($(this).data('email'));
-                $('#Password').val(''); // şifre güncelleme opsiyonel olabilir
+                $('#Password').val(''); // şifre güncelleme
                 $('#advisorModalLabel').text('Danışman Güncelle');
                 $('#advisorModal').modal('show');
             });
-        });
-    </script>
-    <script>
-    $(document).on('click', '.delete-advisor-btn', function () {
-        var advisorId = $(this).data('id');
 
-        Swal.fire({
-            title: 'Emin misiniz?',
-            text: "Bu danışmanı silmek istediğinize emin misiniz?",
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonColor: '#d33',
-            cancelButtonColor: '#3085d6',
-            confirmButtonText: 'Evet, sil!',
-            cancelButtonText: 'Vazgeç'
-        }).then((result) => {
-            if (result.isConfirmed) {
+            $('#saveAdvisorBtn').click(function () {
+                const advisorData = {
+                    AdvisorId: $('#AdvisorId').val() || null,
+                    UserName: $('#UserName').val(),
+                    Email: $('#Email').val(),
+                    Password: $('#Password').val()
+                };
+
                 $.ajax({
-                    url: '@Url.Action("DeleteAdvisor", "Admin")',
-                    type: 'POST',
-                    data: { id: advisorId },
-                    success: function (response) {
-                        if (response.success) {
-                            Swal.fire('Silindi!', response.message, 'success').then(() => {
-                                location.reload();
-                            });
+                    url: 'https://localhost:44335/api/AdminApi/CreateOrUpdateAdvisor',
+                    method: 'POST',
+                    contentType: 'application/json',
+                    data: JSON.stringify(advisorData),
+                    success: function (res) {
+                        if (res.success) {
+                            location.reload();
                         } else {
-                            Swal.fire('Hata!', response.message, 'error');
+                            alert("İşlem başarısız: " + res.message);
                         }
                     },
                     error: function () {
-                        Swal.fire('Hata!', 'Silme işlemi sırasında bir hata oluştu.', 'error');
+                        alert("Sunucu hatası oluştu.");
                     }
                 });
-            }
+            });
         });
-    });
+
+    </script>
+    <script>
+        $(document).on('click', '.delete-advisor-btn', function () {
+            var advisorId = $(this).data('id');
+
+            Swal.fire({
+                title: 'Emin misiniz?',
+                text: "Bu danışmanı silmek istediğinize emin misiniz?",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#3085d6',
+                confirmButtonText: 'Evet, sil!',
+                cancelButtonText: 'Vazgeç'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    $.ajax({
+                        type: 'DELETE',
+                        url: `https://localhost:44335/api/AdminApi/DeleteAdvisor?advisorId=${advisorId}`,
+                        /*data: { id: advisorId },*/
+                        success: function (response) {
+                            if (response.success) {
+                                Swal.fire('Silindi!', response.message, 'success').then(() => {
+                                    location.reload();
+                                });
+                            } else {
+                                Swal.fire('Hata!', response.message, 'error');
+                            }
+                        },
+                        error: function () {
+                            Swal.fire('Hata!', 'Silme işlemi sırasında bir hata oluştu.', 'error');
+                        }
+                    });
+                }
+            });
+        });
     </script>
 }

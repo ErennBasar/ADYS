@@ -1,11 +1,12 @@
-﻿@model List<ADYS.Models.User>
+﻿@*@model List<ADYS.Models.User>*@
+@model List<MyApiProject.DTOs.StudentSelectCoursesDto>
 
 
 <div class="col-12">
     <div class="card glass-card ">
         <div class="card-header text-white">
-          
-            <h2>Danışman Öğrencileri</h2>
+
+            <h4>Ders Seçimi yapan Öğrenciler</h4>
 
         </div>
         <div class="card-body">
@@ -22,9 +23,9 @@
                         @foreach (var student in Model)
                         {
                             <tr>
-                                <td>@student.UserName</td>
+                                <td>@student.StudentName</td>
                                 <td>
-                                    @Html.ActionLink("Dersleri İncele", "Review", "Advisor", new { studentId = student.UserId }, new { @class = "btn btn-info btn-sm" })
+                                    @Html.ActionLink("Dersleri İncele", "Review", "Advisor", new { studentId = student.StudentId }, new { @class = "btn btn-info btn-sm" })
                                 </td>
                             </tr>
                         }
@@ -37,11 +38,21 @@
 
 @section Scripts {
     <script>
+        window.addEventListener("pageshow", function (event) {
+            if (event.persisted || (window.performance && window.performance.navigation.type === 2)) {
+                window.location.reload();
+            }
+        });
+    </script>
+    <script>
         $(document).ready(function () {
             $('#advisorStudentsSelectedCourse').DataTable({
                 paging: true,
                 searching: true,
                 ordering: true,
+                language: {
+                    "url": "/Scripts/i18n/tr.json"
+                }
             });
         });
     </script>

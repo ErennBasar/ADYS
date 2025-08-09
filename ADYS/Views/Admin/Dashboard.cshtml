@@ -1,4 +1,6 @@
-﻿@model List<ADYS.ViewModels.StudentDashboardViewModel>
+﻿@*@model List<ADYS.ViewModels.StudentDashboardViewModel>*@
+@model List<MyApiProject.DTOs.StudentDashboardDto>
+
 
 @{
     ViewBag.Title = "Admin Paneli - Genel Kontrol";
@@ -33,7 +35,7 @@
                                 <td>@student.AdvisorName </td>
                                 <td>@student.AdvisorEmail </td>
                                 <td>
-                                    @Html.ActionLink("Dersleri İncele", "Review", "Admin", new {studentId = student.StudentId}, new { @class = "btn btn-sm" })
+                                    @Html.ActionLink("Dersleri İncele", "Review", "Admin", new { studentId = student.StudentId }, new { @class = "btn btn-sm" })
                                 </td>
                             </tr>
                         }
@@ -44,6 +46,13 @@
     </div>
 </div>
 @section scripts{
+    <script>
+        window.addEventListener("pageshow", function (event) {
+            if (event.persisted || (window.performance && window.performance.navigation.type === 2)) {
+                window.location.reload();
+            }
+        });
+    </script>
 
     <script>
 

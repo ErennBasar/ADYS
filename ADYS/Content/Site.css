@@ -1,13 +1,58 @@
-﻿body {
-    /*background-color: #374151 !important;*/
+﻿html, body {
+    height: 100%;
+}
+body {
+    margin: 0;
+    min-height: 100vh;
+    color: #fff;
+    font-family: 'Inter', system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+    background-color: #0b1636; /* derin lacivert */
+    overflow-x: hidden;
+    position: relative; /* pseudo için zemin */
+    /*background-attachment: fixed;
+    background-size: cover;*/
+    /* Katmanlı efekt */
+    /*background-image: radial-gradient(5200px 800px at 15% 20%, rgba(255, 127, 17, 0.25), transparent 60%),*/ /* turuncu parıltı */
+    /*radial-gradient(1000px 700px at 80% 30%, rgba(35, 61, 255, 0.22), transparent 60%),*/ /* lacivert parıltı */
+    /*radial-gradient(700px 600px at 75% 85%, rgba(0, 212, 255, 0.18), transparent 55%),*/ /* soğuk mavi */
+    /*linear-gradient(135deg, #0d1b2a, #000000);*/ /* ana geçiş */
+    /*background-blend-mode: screen, screen, screen, normal;*/
+}
+    /* ChatGPT tarzı “organik ışık lekesi” */
+    body::before {
+        content: "";
+        position: fixed;
+        inset: 0;
+        z-index: -1; /* içerik arkası */
+        pointer-events: none;
+        /* Katmanlar: büyük sarı, sarının içinde kırmızı çekirdek, derinlik için lacivert vinyet + yumuşak düşüş */
+        background-image: 
+        radial-gradient(3000px 1000px at 5% 20%, rgba(255, 127, 17, 0.38), transparent 60%), /* turuncu parıltı */
+        radial-gradient(1500px 700px at 80% 30%, rgba(35, 61, 255, 0.22), transparent 20%), /* lacivert parıltı */
+        radial-gradient(1500px 600px at 75% 85%, rgba(0, 212, 255, 0.22), transparent 35%); /* soğuk mavi parıltı */
+
+        background-repeat: no-repeat;
+        background-size: cover;
+        /* Cam/blur etkisi ve canlılık */
+        filter: blur(90px) saturate(190%);
+        opacity: 0.99;
+        will-change: transform, filter;
+    }
+
+
+/*arka plan resim olduğunda*/
+/*body {
+    background-color: #374151 !important;
     background-image: url('/Content/Backgrounds/DarkMountain.jpg');
     background-size: cover;
     background-position: center center;
     background-attachment: fixed;
     color: #f5f5f5;
     font-family: 'Inter', sans-serif;
-    /* font-family: 'Segoe UI', sans-serif; */
-}
+    padding-top: 20px;*/
+    /*font-family: 'Segoe UI', sans-serif;*/
+/*}*/
+
 /* Set padding to keep content from hitting the edges */
 .body-content {
     margin-top: 15px;
@@ -65,7 +110,7 @@ h2, h4, p {
 .card:hover {
     transform: scale(1.01); /* Hover büyüme efekti */
     transition: transform 0.3s ease, box-shadow 0.3s ease;
-    box-shadow: 0 6px 12px #009999 !important;
+    box-shadow: 0 6px 12px #27232e !important;
 }
 
 

@@ -1,4 +1,7 @@
-﻿@model List<ADYS.Models.Term>
+﻿@*@model List<ADYS.Models.Term>*@
+
+@model List<MyApiProject.DTOs.TermsDto>
+
 @{
     ViewBag.Title = "Dönem Yönetimi";
 }
@@ -10,57 +13,61 @@
 
 <!-- DataTable -->
 <div class="col-12">
-    <div class="card glass-card">      
-            <div class="card-header text-white">
-                <h2>Dönem Yönetimi</h2>
-                <button type="button" class="btn btn-success mb-3 text-end"
-                        data-bs-toggle="modal"
-                        data-bs-target="#termModal">
-                    <i class="bi bi-plus-circle"></i> Dönem Ekle
-                </button>
-            </div>      
-            <div class="card-body">
-                <div class="table-responsive">
-                    <table id="viewTerms" class="display custom-datatable">
-                        <thead>
+    <div class="card glass-card">
+        <div class="card-header text-white">
+            <h2>Dönem Yönetimi</h2>
+            <button type="button" class="btn btn-success mb-3 text-end"
+                    data-bs-toggle="modal"
+                    data-bs-target="#termModal">
+                <i class="bi bi-plus-circle"></i> Dönem Ekle
+            </button>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table id="viewTerms" class="display custom-datatable">
+                    <thead>
+                        <tr>
+                            <th>Adı</th>
+                            <th>Durum</th>
+                            <th>Seçim Başlangıç</th>
+                            <th>Seçim Bitiş</th>
+                            <th>İşlemler</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var term in Model)
+                        {
                             <tr>
-                                <th>Adı</th>
-                                <th>Durum</th>
-                                <th>Seçim Başlangıç</th>
-                                <th>Seçim Bitiş</th>
-                                <th>İşlemler</th>
+                                <td>@term.TermName</td>
+                                <td>@(term.IsActive ? "Açık" : "Kapalı")</td>
+                                <td>@(term.TermStartTime?.ToString("dd-MM-yyyy"))</td>
+                                <td>@(term.TermEndTime?.ToString("dd-MM-yyyy"))</td>
+                                <td>
+                                    <button type="button" class="btn btn-sm btn-warning editTermBtn"
+                                            data-bs-toggle="modal"
+                                            data-bs-target="#termModal"
+                                            data-id="@term.TermId"
+                                            data-name="@term.TermName"
+                                            data-start="@(term.TermStartTime?.ToString("yyyy-MM-dd"))"
+                                            data-end="@(term.TermEndTime?.ToString("yyyy-MM-dd"))"
+                                            data-active="@term.IsActive.ToString().ToLower()">
+                                        Güncelle
+                                    </button>
+                                    <button type="button"
+                                            class="btn btn-danger btn-sm delete-term-btn"
+                                            data-id="@term.TermId">
+                                        Sil
+                                    </button>
+                                    @*@Html.ActionLink("Sil", "DeleteTerm", new { id = term.TermId }, new { @class = "btn btn-danger btn-sm", onclick = "return confirm('Silmek istediğinize emin misiniz?');" })*@
+                                </td>
                             </tr>
-                        </thead>
-                        <tbody>
-                            @foreach (var term in Model)
-                            {
-                                <tr>
-                                    <td>@term.TermName</td>
-                                    <td>@(term.IsActive ? "Açık" : "Kapalı")</td>
-                                    <td>@(term.CourseSelectionStart?.ToString("dd-MM-yyyy"))</td>
-                                    <td>@(term.CourseSelectionEnd?.ToString("dd-MM-yyyy"))</td>
-                                    <td>
-                                        <button type="button" class="btn btn-sm btn-warning editTermBtn"
-                                                data-bs-toggle="modal"
-                                                data-bs-target="#termModal"
-                                                data-id="@term.TermId"
-                                                data-name="@term.TermName"
-                                                data-start="@(term.CourseSelectionStart?.ToString("yyyy-MM-dd"))"
-                                                data-end="@(term.CourseSelectionEnd?.ToString("yyyy-MM-dd"))"
-                                                data-active="@term.IsActive.ToString().ToLower()">
-                                            Güncelle
-                                        </button>
-
-                                        @Html.ActionLink("Sil", "DeleteTerm", new { id = term.TermId }, new { @class = "btn btn-danger btn-sm", onclick = "return confirm('Silmek istediğinize emin misiniz?');" })
-                                    </td>
-                                </tr>
-                            }
-                        </tbody>
-                    </table>
-                </div>
+                        }
+                    </tbody>
+                </table>
             </div>
         </div>
     </div>
+</div>
 
 <!-- Modal -->
 <div class="modal fade" id="termModal" tabindex="-1" aria-labelledby="termModalLabel" aria-hidden="true">
@@ -71,8 +78,9 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Kapat"></button>
             </div>
             <div class="modal-body text-dark">
-                @using (Html.BeginForm("CreateOrUpdateTerm", "Admin", FormMethod.Post, new { id = "termForm" }))
-                {
+
+                <form id="termForm">
+
                     @Html.Hidden("TermId", null, new { id = "TermId" })
 
                     <div class="row">
@@ -96,7 +104,7 @@
                             </div>
                         </div>
                     </div>
-                }
+
             </div>
             <div class="modal-footer">
                 <button type="submit" class="btn-success" form="termForm" id="submitBtn">Kaydet</button>
@@ -108,6 +116,13 @@
 
 
 @section Scripts {
+    <script>
+        window.addEventListener("pageshow", function (event) {
+            if (event.persisted || (window.performance && window.performance.navigation.type === 2)) {
+                window.location.reload();
+            }
+        });
+    </script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
     @if (TempData["ShowAlert"] != null && (bool)TempData["ShowAlert"])
@@ -135,34 +150,41 @@
         });
     </script>
     <script>
+        $('#termForm').submit(function (e) {
+            e.preventDefault();
+
+            const termData = {
+                TermId: $('#TermId').val() || null,
+                TermName: $('#TermName').val(),
+                TermStartTime: $('#CourseSelectionStart').val(),
+                TermEndTime: $('#CourseSelectionEnd').val(),
+                IsActive: $('#IsActive').is(':checked')
+            };
+
+            $.ajax({
+                url: 'https://localhost:44335/api/AdminApi/CreateOrUpdateTerm',
+                type: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify(termData),
+                success: function (response) {
+                    alert(response.message); // SweetAlert kullanmıyoruz
+                    location.reload(); // Başarı durumunda sayfayı yenile
+                },
+                error: function (xhr) {
+                    alert("Bir hata oluştu: " + xhr.responseText);
+                }
+            });
+        });
+
         /*Güncelleme*/
         function clearForm() {
             $('#TermId').val('');
             $('#TermName').val('');
-            $('#CourseSelectionStart').val('');
-            $('#CourseSelectionEnd').val('');
+            $('#TermStartTime').val('');
+            $('#TermEndTime').val('');
             $('#IsActive').prop('checked', false);
             $('#submitBtn').text("Ekle").removeClass('btn-warning').addClass('btn-success');
         }
-
-        $('.editTermBtn').click(function () {
-            $('#TermId').val($(this).data('id'));
-            $('#TermName').val($(this).data('name'));
-            $('#CourseSelectionStart').val($(this).data('start'));
-            $('#CourseSelectionEnd').val($(this).data('end'));
-
-            // Boolean olarak ayarla
-            let isActive = $(this).data('active') === true || $(this).data('active') === "true";
-            $('#IsActive').prop('checked', isActive);
-
-            $('#submitBtn').text("Güncellemeyi Onayla").removeClass('btn-success').addClass('btn-warning');
-
-            // Modal'ı aç
-            $('#termModal').modal('show');
-        });
-
-    </script>
-    <script>
         /*Ekleme*/
         $(document).ready(function () {
             // Modal her açıldığında sıfırlansın
@@ -173,14 +195,65 @@
                 if (!button.hasClass("editTermBtn")) {
                     $('#TermId').val('');
                     $('#TermName').val('');
-                    $('#CourseSelectionStart').val('');
-                    $('#CourseSelectionEnd').val('');
+                    $('#TermStartTime').val('');
+                    $('#TermEndTime').val('');
                     $('#IsActive').prop('checked', false);
                     $('#submitBtn').text("Ekle").removeClass('btn-warning').addClass('btn-success');
                 }
             });
+
+
+            $('.editTermBtn').click(function () {
+                $('#TermId').val($(this).data('id'));
+                $('#TermName').val($(this).data('name'));
+                $('#TermStartTime').val($(this).data('start'));
+                $('#TermEndTime').val($(this).data('end'));
+
+                // Boolean olarak ayarla
+                let isActive = $(this).data('active') === true || $(this).data('active') === "true";
+                $('#IsActive').prop('checked', isActive);
+
+                $('#submitBtn').text("Güncellemeyi Onayla").removeClass('btn-success').addClass('btn-warning');
+
+                // Modal'ı aç
+                $('#termModal').modal('show');
+            });
         });
     </script>
+    <script>
+        $(document).on('click', '.delete-term-btn', function () {
+            var termId = $(this).data('id');
 
+            Swal.fire({
+                title: 'Emin misiniz?',
+                text: "Bu danışmanı silmek istediğinize emin misiniz?",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#3085d6',
+                confirmButtonText: 'Evet, sil!',
+                cancelButtonText: 'Vazgeç'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    $.ajax({
+                        type: 'DELETE',
+                        url: `https://localhost:44335/api/AdminApi/DeleteTerm?termId=${termId}`,
+                        success: function (response) {
+                            if (response.success) {
+                                Swal.fire('Silindi!', response.message, 'success').then(() => {
+                                    location.reload();
+                                });
+                            } else {
+                                Swal.fire('Hata!', response.message, 'error');
+                            }
+                        },
+                        error: function () {
+                            Swal.fire('Hata!', 'Silme işlemi sırasında bir hata oluştu.', 'error');
+                        }
+                    });
+                }
+            });
+        });
+    </script>
 }
 

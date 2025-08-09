@@ -1,5 +1,21 @@
-﻿@model List<ADYS.ViewModels.ReviewCourseViewModel>
+﻿@*@model List<ADYS.ViewModels.ReviewCourseViewModel>*@
+@model List<MyApiProject.DTOs.ReviewCourseDto>
 
+@{
+    ViewBag.Title = "Ders Onay Paneli";
+    int toplamAkts = Model.Sum(m => m.AKTS);
+    bool hepsiOnayli = Model.All(m => m.IsApproved == true);
+    int studentId = ViewBag.StudentId != null ? (int)ViewBag.StudentId : 0;
+}
+
+@if (hepsiOnayli)
+{
+    <div class="alert alert-success">✅ Tüm dersler onaylandı.</div>
+}
+else
+{
+    <div class="alert alert-warning">⏳ Bazı dersler henüz onaylanmadı.</div>
+}
 
 <div class="col-12">
     <div class="card glass-card " color: #ccc;">
@@ -7,6 +23,7 @@
             <h2 class="text-center m-0">
                 @ViewBag.StudentName - Ders Seçimleri
             </h2>
+            <p><strong>Toplam Seçilen AKTS:</strong> @toplamAkts</p>
         </div>
         <div class="card-body">
             <div class="table-responsive">
@@ -48,15 +65,26 @@
 
 @section Scripts {
     <script>
+        window.addEventListener("pageshow", function (event) {
+            if (event.persisted || (window.performance && window.performance.navigation.type === 2)) {
+                window.location.reload();
+            }
+        });
+    </script>
+    <script>
         $(function () {
             $(".approve-btn").click(function () {
                 const id = $(this).data("id");
                 const approve = $(this).data("approve");
 
                 $.ajax({
-                    url: '@Url.Action("UpdateApproval", "Advisor")',
-                    method: 'POST',
-                    data: { courseSelectionId: id, approve: approve },
+                    type: 'POST',
+                    url: `https://localhost:44335/api/AdvisorApi/UpdateApproval?courseSelectionId=${id}&approve=${approve}`,
+                    contentType: 'application/json',
+                    //data: {
+                    //    courseSelectionId: id,
+                    //    approve: approve
+                    //},
                     success: function (res) {
                         if (res.success) {
                             location.reload();
@@ -78,6 +106,9 @@
                 paging: true,
                 searching: true,
                 ordering: true,
+                language: {
+                    "url": "/Scripts/i18n/tr.json"
+                }
             })
         });
     </script>

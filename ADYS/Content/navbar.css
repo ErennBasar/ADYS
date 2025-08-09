@@ -1,0 +1,83 @@
+﻿/* Sayfa içeriği navbar'a çarpmasın */
+body {
+    padding-top: 80px; /* fixed navbar yüksekliğine göre ayarla */
+}
+.adys-navbar {
+    margin-bottom: 96px;
+    position: fixed;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 1000;
+    display: inline-flex; /* sadece içerik kadar */
+    align-items: center;
+    /* Boyut ve yerleşim */
+    /*width: min(1100px, calc(100% - 32px)); ortalanmış "pill" görünüm */
+    width: auto;
+    max-width: 100%;
+    gap: 12px;
+    border-radius: 50px;
+    padding: 10px 20px;
+    /* Cam efekti */
+    background: rgba(0, 0, 0, 0.3);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    /* Hafif gölge */
+    box-shadow: 0 8px 24px rgba(0,0,0,0.25);
+    transition: all 0.3s ease;
+}
+/* Scroll sonrası küçülmüş hali */
+.adys-navbar.shrink {
+  padding: 8px 20px;
+  border-radius: 35px;
+  background: rgba(34, 34, 34, 0.85); /* biraz daha opak olabilir */
+}
+.adys-navbar .navbar-brand {
+  font-size: 1.25rem;
+  transition: font-size 0.3s ease;
+}
+.adys-navbar.shrink {
+  font-size: 1rem;
+}
+
+.adys-navbar .nav-link,
+.adys-navbar .navbar-brand {
+    color: #fff !important;
+  font-weight: 500;
+  text-decoration: none;
+  transition: color .25s ease;
+}
+/* Toggler büyütmeden pay kapmasın */
+.adys-navbar .navbar-collapse { flex-grow: 0; } 
+
+.adys-navbar .nav-link:hover,
+.adys-navbar .navbar-brand:hover {
+    color: #ffcb61 !important;
+}
+
+    /* Toggler görünümü */
+.adys-navbar .navbar-toggler {
+    border: 0;
+}
+.adys-navbar .navbar-toggler-icon { 
+    filter: invert(1); 
+}
+
+/* Mobil uyum: küçük ekranlarda full genişlik ve daha az radius */
+/*@media (max-width: 992px) {
+  .adys-navbar {
+    left: 50%;
+    transform: translateX(-50%);
+    top: 12px;
+    width: calc(100% - 24px);
+    border-radius: 18px;
+    padding: 8px 12px;
+  }*/
+
+  /* Mobile'da menüyü dikey ve ortalı tutmak istersen: */
+  /*.adys-navbar .navbar-nav {
+    gap: 6px;
+    align-items: center;
+  }
+}*/
+
